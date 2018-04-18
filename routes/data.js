@@ -10,6 +10,10 @@ var router = express.Router();
 
 var handlers = require('../handlers/data_handlers');
 
-router.get('/Retrieve', handlers.contactquery);
+router.get('/', (req, res) => {
+	res.send('Hey banana.');
+});
+
+router.get('/Retrieve', handlers.allfunctions);
 
 module.exports = router;

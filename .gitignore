@@ -1,5 +1,9 @@
 db_connect.json
 
+.eslintrc.json
+README.sublime-workspace
+
+
 # Logs
 logs
 *.log
