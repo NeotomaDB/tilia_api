@@ -1,7 +1,8 @@
 db_connect.json
 
 .eslintrc.json
-README.sublime-workspace
+*.sublime-workspace
+*.sublime-project
 
 
 # Logs
@@ -66,4 +67,3 @@ typings/
 
 # next.js build output
 .next
-
