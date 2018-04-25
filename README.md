@@ -35,3 +35,23 @@ A client, sending a `GET` call to `\Require` will obtain the following response 
 ```
 
 This JSON response can be chained to a single-page app that may support an interface similar to the current [Tilia SQL app](https://tilia.neotomadb.org/Retrieve/doc2/).
+
+### Obtaining data from the Tilia name-space
+
+The call:
+
+```
+GET Retrieve/?method=TILIAMETHOD&param_a=value_a&param_b=value_b
+```
+
+Invokes the `method` as a function in the Neotoma postgres database with the parameters as named parameters using the function call:
+
+```sql
+SELECT * FROM method(param_a := value_a, ... )
+```
+
+And then returns the object as a JSON object.
+
+## Development
+
+Still need to manage explicit mapping of the schemas within the database, and check whether we need to vet the function names and parameters before invoking the call.
