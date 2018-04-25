@@ -6,17 +6,35 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "ejs": "~2.5.6",
     "express": "~4.15.2",
     "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2",
-    "bluebird": "^3.5.0",
-    "pg-promise": "^5.7.1"
+    "pg-promise": "^5.7.1",
+    "serve-favicon": "~2.4.2"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.1.0",
     "pre-commit": "^1.2.2"
-  }
+  },
+  "description": "A repository for the implementation of the Tilia/uploader API.  This API is intended to replace the current [Tilia API](https://tilia.neotomadb.org) which uses the SQL Server database and a .NET front end.",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://SimonGoring:46d081300c05b9d503e927394d8c5477de578b9b@github.com/NeotomaDB/tilia_api.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NeotomaDB/tilia_api/issues"
+  },
+  "homepage": "https://github.com/NeotomaDB/tilia_api#readme"
 }
