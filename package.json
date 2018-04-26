@@ -29,7 +29,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://SimonGoring:46d081300c05b9d503e927394d8c5477de578b9b@github.com/NeotomaDB/tilia_api.git"
+    "url": "https://github.com/NeotomaDB/tilia_api.git"
   },
   "author": "",
   "license": "MIT",
