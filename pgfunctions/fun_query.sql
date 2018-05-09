@@ -11,6 +11,6 @@ JOIN    (
   FROM    pg_catalog.pg_namespace n
   JOIN    pg_catalog.pg_proc p
   ON      pronamespace = n.oid
-  WHERE   nspname IN ('ti','ts')) AS longstring ON longstring.funname = p.proname
-WHERE   nspname IN ('ti','ts')
+  WHERE   nspname IN ('ti','ecg')) AS longstring ON longstring.funname = p.proname
+WHERE   nspname IN ('ti','ecg')
 GROUP BY nspname, proname;

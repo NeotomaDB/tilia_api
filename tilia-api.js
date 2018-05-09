@@ -15,18 +15,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// get global database object
-  var db = require('./database/pgp_db');
- var pgp = db.$config.pgp;
-
-var data = require('./routes/data.js')
-
-const port = 3000;
-
-app.listen(port, () => {
-  console.log('We are live on ' + port);
+//allow cors resource sharing
+app.use(function(req, res, next){
+	res.header("Access-Control-Allow-Origin","*");
+	res.header("Access-Control-Allow-Headers", "Origin, x-requested-with, content-type, Accept");
+	next();
 });
 
+var data = require('./routes/data.js');
+
 app.use('/', data);
+
 
 module.exports = app;
