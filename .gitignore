@@ -1,5 +1,6 @@
 db_connect.json
 
+.eslintrc.js
 .eslintrc.json
 *.sublime-workspace
 *.sublime-project
