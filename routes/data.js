@@ -14,6 +14,6 @@ router.get('/', (req, res) => {
   res.send('Hey banana.')
 });
 
-router.get('/Retrieve', handlers.allfunctions)
+router.get('/retrieve', handlers.allfunctions);
 
 module.exports = router

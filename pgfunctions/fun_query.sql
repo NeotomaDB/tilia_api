@@ -1,7 +1,7 @@
 SELECT '' as description,
-       proname as name, 
+       proname as name,
        CONCAT('<a href="?method=', proname, '&action=doc" target="_BLANK">Details</a>') AS detailsurl,
-       json_agg(json_build_object('name', (string_to_array(longstring.params, ' '))[1], 
+       json_agg(json_build_object('name', (string_to_array(longstring.params, ' '))[1],
                                   'type', array_to_string((string_to_array(longstring.params, ' '))[2:], ' '))) AS params
 FROM    pg_catalog.pg_namespace n
 JOIN    pg_catalog.pg_proc p
