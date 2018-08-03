@@ -12,4 +12,4 @@ var handlers = require('../handlers/data_handlers')
 
 router.get('/retrieve', handlers.allfunctions);
 
-module.exports = router
+module.exports = router;

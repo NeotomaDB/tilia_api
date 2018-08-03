@@ -17,7 +17,6 @@ const queryFunc = sql('./fun_query.sql')
 const schemFunc = sql('./get_schema.sql')
 
 function allFunctions (req, res, next) {
-  console.log(req.query)
 
   var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
   var method = Object.keys(req.query).includes('method')
@@ -40,52 +39,69 @@ function allFunctions (req, res, next) {
         return next(err)
       })
 
-    return dbFuncs
+    return dbFuncs;
+
   } else {
+
     var allParams = req.query
     var sqlMethod = allParams.method
 
-    var schema = db.any(schemFunc)
+    // First validate that the method is in the accepted set:
+    var schema = db.any(queryFunc)
       .then(function (data) {
-        return data
+          // Check that sqlMethod is in the set of data[name]:
+        var methods = data.map(x => x.name)
+        return(methods)
       })
-
-    delete allParams.method
-
-    // find the namespace for the function:
-
-    // Call the db to get the schema for the method.
-
-    var sqlCall = 'SELECT * FROM ' + schema + '.' + sqlMethod + '('
-
-    for (var i = 0; i < Object.keys(allParams).length; i++) {
-      sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
-
-      if (i < Object.keys(allParams).length - 1) {
-        sqlCall = sqlCall + ', '
-      }
-    }
-
-    sqlCall = sqlCall + ')'
-
-    console.log(sqlCall)
-
-    var dbCall = db.any(sqlCall)
-      .then(function (data) {
+      .then(function(data) {
         console.log(data)
-        res.status(200)
+        if (data.includes(sqlMethod)) {
+          // If the function called by the user is in the set of existing Postgres functions:
+          var schema = db.any(schemFunc, sqlMethod)
+            .then(function (data) {
+              console.log(allParams)
+              var sqlCall = 'SELECT * FROM ' + data[0].nspname + '.' + sqlMethod + '('
+
+              for (var i = 1; i < Object.keys(allParams).length; i++) {
+                sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
+
+                if (i < Object.keys(allParams).length - 1) {
+                  sqlCall = sqlCall + ', '
+                }
+              }
+
+              sqlCall = sqlCall + ')'
+              console.log(sqlCall)
+              return(sqlCall)
+            })
+            .then(function(schema) {
+              var dbCall = db.any(schema)
+                .then(function (data) {
+                  console.log(data)
+                  res.status(200)
+                    .json({
+                      status: 'success',
+                      data: data,
+                      message: 'Retrieved all tables'
+                    })
+                })
+                .catch(function (err) {
+                  return next(err)
+                })
+              return (dbCall);
+            })
+        } else {
+          res.status(500)
           .json({
-            status: 'success',
-            data: data,
-            message: 'Retrieved all tables'
-          })
-      })
-      .catch(function (err) {
-        return next(err)
+            status: 'failure',
+            data: null,
+            message: 'Function is not in the set of supported Neotoma Tilia functions.'
+          });
+        }
       })
 
-    return (dbCall)
   }
+  return(schema);
 }
 
 module.exports.allFunctions = allFunctions

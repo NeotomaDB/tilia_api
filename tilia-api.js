@@ -7,6 +7,9 @@
 
 var app = express()
 
+// uncomment after placing your favicon in /public
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,5 +27,10 @@ var data = require('./routes/data.js');
 
 app.use('/', data);
 
+app.all('*', function (req, res) {
+  res.redirect('/retrieve');
+});
+
+app.listen(3000);
 
 module.exports = app;
