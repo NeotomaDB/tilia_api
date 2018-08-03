@@ -24,7 +24,7 @@ The project uses a `node`/`express` backbone to support a single endpoint. To st
 node app.js
 ```
 
-A client, sending a `GET` call to `\Require` will obtain the following response (truncated):
+A client, sending a `GET` call to `/retrieve` (or `/retrieve/`) will obtain the following response (truncated):
 
 ```json
 {"status":"success",
@@ -38,19 +38,30 @@ This JSON response can be chained to a single-page app that may support an inter
 
 ### Obtaining data from the Tilia name-space
 
-The call:
+The call to the new development API is structured as `method` & `parameter`:
 
 ```
-GET Retrieve/?method=TILIAMETHOD&param_a=value_a&param_b=value_b
+GET retrieve/?method=tiliamethod&param_a=value_a&param_b=value_b
 ```
 
-Invokes the `method` as a function in the Neotoma postgres database with the parameters as named parameters using the function call:
+This call invokes the `method` as a function in the Neotoma postgres database with the parameters as named parameters using the function call:
 
 ```sql
-SELECT * FROM method(param_a := value_a, ... )
+SELECT * FROM method(param_a:=value_a, ... )
 ```
 
-And then returns the object as a JSON object.
+And then returns the object as a JSON object. For example:
+
+```bash
+GET retrieve/?method=getchildtaxacount&hitaxid=19
+```
+returns
+
+```json
+{"status":"success",
+ "data":[{"getchildtaxacount":"0"}],
+ "message":"Retrieved all tables"}
+```
 
 ## Development
 
