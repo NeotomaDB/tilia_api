@@ -46,7 +46,7 @@ function allFunctions (req, res, next) {
 
     delete allParams.method
 
-    var sqlCall = 'SELECT * FROM ti.' + sqlMethod + '('
+    var sqlCall = 'SELECT * FROM ' + sqlMethod + '('
 
     for (var i = 0; i < Object.keys(allParams).length; i++) {
       sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
