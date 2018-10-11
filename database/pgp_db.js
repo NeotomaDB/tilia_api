@@ -6,7 +6,7 @@ var options = {
 };
 
 const pgp = require('pg-promise')(options);
-const ctStr = require('../db_connect.json');
+const ctStr = require('db_connect.json');
 
 const db = pgp(ctStr);
 

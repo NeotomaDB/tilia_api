@@ -14,6 +14,7 @@ function sql (file) {
 
 // Create a QueryFile globally, once per file:
 const queryFunc = sql('./fun_query.sql')
+const schemFunc = sql('./get_schema.sql')
 
 function allFunctions (req, res, next) {
   console.log(req.query)
@@ -44,9 +45,18 @@ function allFunctions (req, res, next) {
     var allParams = req.query
     var sqlMethod = allParams.method
 
+    var schema = db.any(schemFunc)
+      .then(function (data) {
+        return data
+      })
+
     delete allParams.method
 
-    var sqlCall = 'SELECT * FROM ti.' + sqlMethod + '('
+    // find the namespace for the function:
+
+    // Call the db to get the schema for the method.
+
+    var sqlCall = 'SELECT * FROM ' + schema + '.' + sqlMethod + '('
 
     for (var i = 0; i < Object.keys(allParams).length; i++) {
       sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
