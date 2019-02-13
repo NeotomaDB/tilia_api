@@ -1,5 +1,7 @@
 db_connect.json
+database/pgp_db.js
 
+.eslintrc.js
 .eslintrc.json
 *.sublime-workspace
 *.sublime-project
