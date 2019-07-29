@@ -5,6 +5,7 @@ const path = require('path')
 // get global database object
 var db = require('../database/pgp_db')
 var pgp = db.$config.pgp
+pgp.pg.types.setTypeParser(20, parseInt);
 
 // Helper for linking to external query files:
 function sql (file) {
@@ -71,13 +72,11 @@ function allFunctions (req, res, next) {
               }
 
               sqlCall = sqlCall + ')'
-              console.log(sqlCall)
               return(sqlCall)
             })
             .then(function(schema) {
               var dbCall = db.any(schema)
                 .then(function (data) {
-                  console.log(data)
                   res.status(200)
                     .json({
                       status: 'success',
