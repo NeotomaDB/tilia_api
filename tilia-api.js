@@ -4,6 +4,8 @@
        var logger = require('morgan')
  var cookieParser = require('cookie-parser')
    var bodyParser = require('body-parser')
+ //  var passport = require('passport')
+  //var LocalStrategy = require('passport-local').Strategy;
 
 var app = express()
 
@@ -22,6 +24,28 @@ app.use(function(req, res, next){
 	res.header("Access-Control-Allow-Headers", "Origin, x-requested-with, content-type, Accept");
 	next();
 });
+
+/*
+//enable authentication
+app.use(passport.initialize());
+
+app.use(function())
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+*/
 
 var data = require('./routes/data.js');
 
