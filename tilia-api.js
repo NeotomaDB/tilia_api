@@ -4,8 +4,10 @@
        var logger = require('morgan')
  var cookieParser = require('cookie-parser')
    var bodyParser = require('body-parser')
- //  var passport = require('passport')
-  //var LocalStrategy = require('passport-local').Strategy;
+         var cors = require('cors');
+//     var passport = require('passport')
+//var LocalStrategy = require('passport-local').Strategy;
+  var auth = require('./auth/auth.js');
 
 var app = express()
 
@@ -13,39 +15,26 @@ var app = express()
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(logger('dev'));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //allow cors resource sharing
+/*
 app.use(function(req, res, next){
 	res.header("Access-Control-Allow-Origin","*");
 	res.header("Access-Control-Allow-Headers", "Origin, x-requested-with, content-type, Accept");
 	next();
 });
-
-/*
-//enable authentication
-app.use(passport.initialize());
-
-app.use(function())
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
 */
+
+app.use(auth.parseCredentials);
+app.use(auth.validateusernamepassword);
+
+
+
 
 var data = require('./routes/data.js');
 
@@ -58,3 +47,5 @@ app.all('*', function (req, res) {
 app.listen(3000);
 
 module.exports = app;
+
+
