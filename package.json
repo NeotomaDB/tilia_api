@@ -5,6 +5,11 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "scripts": {
+    "start": "nodemon",
+    "dev_nix": "NODE_ENV=development nodemon",
+    "prod_nix": "NODE_ENV=production nodemon"
+  },
   "dependencies": {
     "bluebird": "^3.7.2",
     "body-parser": "~1.18.3",
