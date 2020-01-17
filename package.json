@@ -6,9 +6,9 @@
     "start": "node ./bin/www"
   },
   "scripts": {
-    "start": "nodemon",
-    "dev_nix": "NODE_ENV=development nodemon",
-    "prod_nix": "NODE_ENV=production nodemon"
+    "start": "NODE_ENV=production node ./bin/www",
+    "dev_start": "NODE_ENV=development nodemon", 
+    "dev_www":  "NODE_ENV=development ./bin/www"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
