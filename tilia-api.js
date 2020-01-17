@@ -38,7 +38,7 @@ var data = require('./routes/data.js');
 app.use('/', data);
 
 app.all('*', function (req, res) {
-  res.redirect('/retrieve');
+  res.redirect('/api');
 });
 
 //in production, port is 3001 and server started in script 'www'
