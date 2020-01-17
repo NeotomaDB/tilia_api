@@ -41,6 +41,9 @@ app.all('*', function (req, res) {
   res.redirect('/retrieve');
 });
 
-app.listen(3000);
+//in production, port is 3001 and server started in script 'www'
+if (process.env.NODE_ENV === "development") {
+  app.listen(3000);
+}
 
 module.exports = app;
