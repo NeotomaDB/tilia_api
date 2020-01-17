@@ -30,8 +30,8 @@ app.use(function(req, res, next){
 });
 */
 
-app.use(auth.parseCredentials);
-app.use(auth.validateusernamepassword);
+//app.use(auth.parseCredentials);
+//app.use(auth.validateusernamepassword);
 
 
 
@@ -41,7 +41,7 @@ var data = require('./routes/data.js');
 app.use('/', data);
 
 app.all('*', function (req, res) {
-  res.redirect('/retrieve');
+ // res.redirect('/retrieve');
 });
 
 app.listen(3000);

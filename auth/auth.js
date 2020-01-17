@@ -41,7 +41,6 @@ function parseCredentials(req, res, next) {
         
       }
 
-      console.log("OtherHeaders parsed: "+username+" "+pwd);
       if( username != null && pwd != null){
           var user = {};
           user.username = username;

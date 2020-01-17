@@ -54,12 +54,12 @@ function allFunctions (req, res, next) {
       var arrFuncNameParts = sqlMethod.split('.');
       var funcSchema = arrFuncNameParts[0];
       var funcName = arrFuncNameParts[1];
-        
+      console.log('function schema: '+funcSchema+ ' function name: ' + funcName);
     } else {
       next("Error: function must be schema qualified");
     }
 
-    console.log('function schema: '+funcSchema+ ' function name: ' + funcName);
+   
 
     // First validate that the method is in the accepted set:
     var schema = db.any(queryFunc)
