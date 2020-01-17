@@ -10,8 +10,6 @@ var router = express.Router()
 
 var handlers = require('../handlers/data_handlers')
 
-router.get('/api', handlers.allfunctions);
-
-router.post('/api', handlers.allfunctions);
+router.get('/retrieve', handlers.allfunctions);
 
 module.exports = router;

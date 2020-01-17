@@ -10,7 +10,12 @@
           var app = express()
 
 // create a rotating write stream
-
+if (process.env.NODE_ENV === "development") {
+ var accessLogStream = rfs.createStream('access.log', {
+   interval: '1d', // rotate daily
+   path: path.join(__dirname, 'log')
+  })
+}
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -36,6 +41,9 @@ app.all('*', function (req, res) {
   res.redirect('/retrieve');
 });
 
-
+//in production, port is 3001 and server started in script 'www'
+if (process.env.NODE_ENV === "development") {
+  app.listen(3000);
+}
 
 module.exports = app;
