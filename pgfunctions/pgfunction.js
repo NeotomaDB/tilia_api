@@ -46,6 +46,7 @@ function allFunctions (req, res, next) {
 
     delete allParams.method
 
+    console.log('query function input params for: '+sqlMethod);
     var sqlCall = 'SELECT * FROM ' + sqlMethod + '('
 
     for (var i = 0; i < Object.keys(allParams).length; i++) {
