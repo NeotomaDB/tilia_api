@@ -9,11 +9,9 @@ var options = {
 
 const pgp = require('pg-promise')(options);
 
-if(process.env.NODE_ENV === "development") {
-  var connectpath = '../db_connect.json'
-} else {
+
   connectpath = '../../node_config/db_connect.json'
-}
+
 
 const ctStr = require(connectpath);
 
