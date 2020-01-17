@@ -10,15 +10,17 @@
           var app = express()
 
 // create a rotating write stream
-var accessLogStream = rfs.createStream('access.log', {
-  interval: '1d', // rotate daily
-  path: path.join(__dirname, 'log')
-})
+if (process.env.NODE_ENV === "development") {
+ var accessLogStream = rfs.createStream('access.log', {
+   interval: '1d', // rotate daily
+   path: path.join(__dirname, 'log')
+  })
+}
 
 // uncomment after placing your favicon in /public
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(logger('dev', { stream: accessLogStream }));
+// app.use(logger('dev', { stream: accessLogStream }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
