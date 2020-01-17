@@ -55,13 +55,12 @@ function allFunctions (req, res, next) {
         return(methods)
       })
       .then(function(data) {
-        console.log(data)
         if (data.includes(sqlMethod)) {
-          // If the function called by the user is in the set of existing Postgres functions:
+          // If the function called by the user is in the set of existing
+          // Postgres functions:
           var schema = db.any(schemFunc, sqlMethod)
             .then(function (data) {
-              console.log(allParams)
-              var sqlCall = 'SELECT * FROM ' + data[0].nspname + '.' + sqlMethod + '('
+              var sqlCall = 'SELECT * FROM ' + sqlMethod + '('
 
               for (var i = 1; i < Object.keys(allParams).length; i++) {
                 sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
@@ -85,7 +84,12 @@ function allFunctions (req, res, next) {
                     })
                 })
                 .catch(function (err) {
-                  return next(err)
+                  res.status(500)
+                  .json({
+                    status: 'failure',
+                    data: null,
+                    message: 'Function is not in the set of supported Neotoma Tilia functions.'
+                  });
                 })
               return (dbCall);
             })
