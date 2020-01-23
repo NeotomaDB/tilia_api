@@ -20,7 +20,7 @@ const db = pgp(ctStr);
 
 db.proc('version')
   .then(data => {
-    //console.log(data.version);
+     console.log(data.version);
   })
   .catch(error => {
     console.log("error connecting");

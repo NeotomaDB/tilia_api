@@ -17,6 +17,8 @@
     "morgan": "~1.9.1",
     "pg-promise": "^8.7.5",
     "rotating-file-stream": "^2.0.1",
+    "cors": "^2.8.5",
+    "passport": "^0.4.0",
     "serve-favicon": "~2.5.0"
   },
   "devDependencies": {
