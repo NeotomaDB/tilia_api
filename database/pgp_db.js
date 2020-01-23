@@ -8,8 +8,13 @@ var options = {
 };
 
 const pgp = require('pg-promise')(options);
+const connectpath = '../../node_config/db_connect.json';
 
-const ctStr = require('../node_config/db_connect.json');
+if(process.env.NODE_ENV === "development") {
+  connectpath = '../db_connect.json'
+}
+
+const ctStr = require(connectpath);
 
 const db = pgp(ctStr);
 

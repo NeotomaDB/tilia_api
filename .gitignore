@@ -1,11 +1,15 @@
 db_connect.json
-database/pgp_db.js
+
 
 .eslintrc.js
 .eslintrc.json
 *.sublime-workspace
 *.sublime-project
 
+# tilia app resources
+/public/dojo
+dojo.zip
+retrieve.zip
 
 # Logs
 logs
