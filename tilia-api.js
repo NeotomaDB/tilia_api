@@ -6,8 +6,13 @@
    var bodyParser = require('body-parser')
          var path = require('path')
           var rfs = require('rotating-file-stream')
-
           var app = express()
+
+         var cors = require('cors');
+//     var passport = require('passport')
+//var LocalStrategy = require('passport-local').Strategy;
+  var auth = require('./auth/auth.js');
+
 
 // create a rotating write stream
 if (process.env.NODE_ENV === "development") {
@@ -20,27 +25,40 @@ if (process.env.NODE_ENV === "development") {
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-// app.use(logger('dev', { stream: accessLogStream }));
+if (process.env.NODE_ENV === "development") {
+  app.use(logger('dev', { stream: accessLogStream }));
+}
+
+
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//allow cors resource sharing
-app.use(function(req, res, next){
-	res.header("Access-Control-Allow-Origin","*");
-	res.header("Access-Control-Allow-Headers", "Origin, x-requested-with, content-type, Accept");
-	next();
-});
+//check for authentication required conditions
+//is schema ts and not in ['ValidateUserName', 'ValidateSteward', and 'GetConstituentDatabases']
+
+//app.use(auth.authRequired)
+//app.use(auth.parseCredentials);
+//app.use(auth.validateusernamepassword);
+
+
+
 
 var data = require('./routes/data.js');
 
 app.use('/', data);
 
 app.all('*', function (req, res) {
-  res.redirect('/retrieve');
+  res.redirect('/api');
 });
 
-app.listen(3000);
+//in production, port is 3001 and server started in script 'www'
+if (process.env.NODE_ENV === "development") {
+  app.listen(3000);
+}
 
 module.exports = app;
+
+

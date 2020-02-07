@@ -3,29 +3,30 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
-  },
-  "scripts": {
     "start": "nodemon",
     "dev_nix": "NODE_ENV=development node tilia-api.js",
-    "prod_nix": "NODE_ENV=production nodemon"
+    "prod_nix": "NODE_ENV=production nodemon",
+    "dev_start": "NODE_ENV=development nodemon",
+    "dev_www": "NODE_ENV=development ./bin/www"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
     "body-parser": "~1.18.3",
     "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
     "debug": "^4.1.1",
     "ejs": "^2.7.4",
     "express": "~4.16.4",
     "morgan": "~1.9.1",
+    "passport": "^0.4.0",
     "pg-promise": "^8.7.5",
-    "rotating-file-stream": "^2.0.1",
+    "rotating-file-stream": "^2.0.2",
     "serve-favicon": "~2.5.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",

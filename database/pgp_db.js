@@ -8,11 +8,10 @@ var options = {
 };
 
 const pgp = require('pg-promise')(options);
+const connectpath = '../../node_config/db_connect.json';
 
 if(process.env.NODE_ENV === "development") {
-  var connectpath = '../db_connect.json'
-} else {
-  connectpath = '../../node_config/db_connect.json'
+  connectpath = '../db_connect.json'
 }
 
 const ctStr = require(connectpath);
@@ -21,7 +20,7 @@ const db = pgp(ctStr);
 
 db.proc('version')
   .then(data => {
-    //console.log(data.version);
+     console.log(data.version);
   })
   .catch(error => {
     console.log("error connecting");
