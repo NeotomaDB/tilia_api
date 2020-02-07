@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "nodemon",
-    "dev_nix": "NODE_ENV=development nodemon",
+    "dev_nix": "NODE_ENV=development node tilia-api.js",
     "prod_nix": "NODE_ENV=production nodemon"
   },
   "dependencies": {

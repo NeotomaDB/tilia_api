@@ -88,7 +88,7 @@ function allFunctions (req, res, next) {
                   .json({
                     status: 'failure',
                     data: null,
-                    message: 'Function is not in the set of supported Neotoma Tilia functions.'
+                    message: 'Function is returning an error from the call:\n' + schema + '\nError:\n' + err
                   });
                 })
               return (dbCall);
@@ -98,7 +98,7 @@ function allFunctions (req, res, next) {
           .json({
             status: 'failure',
             data: null,
-            message: 'Function is not in the set of supported Neotoma Tilia functions.'
+            message: 'Function is not in the set of supported Neotoma Tilia functions.\n:' + err
           });
         }
       })
