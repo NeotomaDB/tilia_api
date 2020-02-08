@@ -119,7 +119,7 @@ function allFunctions (req, res, next) {
           .json({
             status: 'failure',
             data: null,
-            message: 'Function is not in the set of supported Neotoma Tilia functions.\n:' + err
+            message: 'Function is not in the set of supported Neotoma Tilia functions.\n:'
           });
         }
       })
