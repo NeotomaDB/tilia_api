@@ -71,13 +71,14 @@ function allFunctions (req, res, next) {
       .then(function(data) {
         //console.log('includes sqlMethod: '+ sqlMethod+' '+data.includes(sqlMethod));
         //console.log('data are: ' + JSON.stringify(data));
-        if (data.includes(funcName)) {
+        //console.log('funcName to find is: '+ funcName);
+        if (data.includes(sqlMethod)) {
           // If the function called by the user is in the set of existing Postgres functions:
           //console.log('schemFunc, sqlMethod are '+schemFunc +', ' + funcName );
 
-          var schema = db.any(schemFunc, funcName)
+          var schema = db.any(schemFunc, [funcName])
             .then(function (data) {
-              console.log(allParams)
+              //console.log(allParams)
               var sqlCall = 'SELECT * FROM ' +  funcSchema + '.' + funcName + '('
 
               for (var i = 1; i < Object.keys(allParams).length; i++) {
@@ -89,13 +90,13 @@ function allFunctions (req, res, next) {
               }
 
               sqlCall = sqlCall + ')'
-              //console.log('sqlCall'+sqlCall);
+              console.log('sqlCall'+sqlCall);
               return(sqlCall)
             })
-            .then(function(schema) {
-              var dbCall = db.any(schema)
+            .then(function(sqlStatement) {
+              console.log('sqlStatement '+ sqlStatement);
+              var dbCall = db.any(sqlStatement)
                 .then(function (data) {
-
                   console.log('function results: '+JSON.stringify(data));
                   res.status(200)
                     .json({
@@ -109,7 +110,7 @@ function allFunctions (req, res, next) {
                   .json({
                     status: 'failure',
                     data: null,
-                    message: 'Function is returning an error from the call:\n' + schema + '\nError:\n' + err
+                    message: 'Error attempting to execute Neotoma Tilia function.'
                   });
                 })
               return (dbCall);
@@ -119,7 +120,7 @@ function allFunctions (req, res, next) {
           .json({
             status: 'failure',
             data: null,
-            message: 'Function is not in the set of supported Neotoma Tilia functions.\n:'
+            message: 'Function is not in the set of supported Neotoma Tilia functions.'
           });
         }
       })
