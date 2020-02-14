@@ -50,9 +50,11 @@ var data = require('./routes/data.js');
 
 app.use('/', data);
 
+
 app.all('*', function (req, res) {
   res.redirect('/api');
 });
+
 
 //in production, port is 3001 and server started in script 'www'
 if (process.env.NODE_ENV === "development") {
