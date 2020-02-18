@@ -55,7 +55,7 @@ function handlePostUpdate(req, res, next){
             }
 
             console.log("params passed are: ", JSON.stringify(pgParamArray));
-            db.func(methodSubmitted, functionInputs)
+            db.func(methodSubmitted, pgParamArray)
                 .then(function(qryResutls){
                      res.status(200)
                     .json({
