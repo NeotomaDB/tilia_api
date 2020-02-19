@@ -10,6 +10,7 @@ var pgp = db.$config.pgp
 //4. call sqlstatement
 
 function handleGetUpdate(req, res, next){
+  console.log("calling handleGetUpdate");
     var pgFunk = require('../pgfunctions/pgfunction.js')
     pgFunk.allFunctions(req, res, next)
 
@@ -91,6 +92,7 @@ function handlePostUpdate(req, res, next){
 // Defining the query functions:
 module.exports = {
   allfunctions: function (req, res, next) {
+    console.log("calling allfunctions in data_handlers");
     var pgFunk = require('../pgfunctions/pgfunction.js')
     pgFunk.allFunctions(req, res, next)
   },

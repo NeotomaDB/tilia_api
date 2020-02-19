@@ -19,8 +19,11 @@ function authrequired(req, res, next){
       console.log("methodPassed ", methodPassed)
       var theSchema = methodPassed.split(".")[0];
       //see if method requires username, pw
-      var unrestrictedMethods = ["ts.getsteward", "ts.checksteward", "ts.validateusername"];
+      console.log("schema for methodPassed "+theSchema);
+      var unrestrictedMethods = ["ts.getsteward", "ts.checksteward", "ts.validateusername", "ts.validatesteward"];
+      console.log("method is restricted " +(unrestrictedMethods.indexOf(methodPassed) == -1 && theSchema == "ts" ));
       if (unrestrictedMethods.indexOf(methodPassed) == -1 && theSchema == "ts" ){
+        console.log("calling parseCredentials");
         parseCredentials(req, function(err, req){
           if(err){return next(err);}
           validateusernamepassword(req, function(err){
@@ -29,6 +32,7 @@ function authrequired(req, res, next){
           })
         });
       } else {
+        console.log("calling next middleware function with no validation");
         //no validation needed
         next();
       }
@@ -59,12 +63,15 @@ function parseCredentials(req, callback) {
     //read other headers
       var err
       //get header with username, pwd
+      console.log("parsing OtherHeaders");
       var headerText = req.get('OtherHeaders');
+      console.log("headerText "+headerText);
       
       if (!headerText){
-        err = new Error('Username and password were not provided');
+        console.log("throwing headerText error");
+        err = new Error('Header with username and password were not provided');
         err.tilia = true;
-        return next(err);
+        callback(err);
       } else {
 
         var regexSeparator =  /\\r\\n{1}/ ;
@@ -81,7 +88,7 @@ function parseCredentials(req, callback) {
           req.user = user;
           callback(null, req);
       } else {
-        err = new Error('Username and password were not provided');
+        err = new Error('OtherHeaders does not contain username and pwd');
         err.tilia = true;
         callback(err);
       }
