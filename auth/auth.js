@@ -5,20 +5,47 @@ var db = require('../database/pgp_db')
 var pgp = db.$config.pgp
 pgp.pg.types.setTypeParser(20, parseInt);
 
+function doNothing(req, res, next){
+  next();
+}
 
+function authrequired(req, res, next){
+    var methodPassed = req.query.method || req.body.method;
 
-function validateusernamepassword(req, res, next){
-    console.log('call validateusernamepassword');
+    if (!methodPassed ){
+      next();
+    } else {
+
+      console.log("methodPassed ", methodPassed)
+      //see if method requires username, pw
+      var unrestrictedMethods = ["ts.getsteward", "ts.checksteward", "ts.validateusername"];
+      if (unrestrictedMethods.indexOf(methodPassed) == -1){
+        parseCredentials(req, function(err, req){
+          if(err){return next(err);}
+          validateusernamepassword(req, function(err){
+            if(err){return next(err);}
+            next();
+          })
+        });
+      } else {
+        //no validation needed
+        next();
+      }
+  }
+}
+
+function validateusernamepassword(req, callback){
+    var err;
     //call validateusernamepassword
         db.query('select * from ts.validatesteward($1, $2)',[req.user.username, req.user.pwd])
             .then(function (data) {
-                console.log('data returned');
-                console.log('date are: '+JSON.stringify(data));
                  //return data;
                  if ( data.length > 0){
-                     next();
+                     callback();
                  } else {
-                     next("Error validating steward")
+                     err = new Error("Error validating steward");
+                     err.tilia = true;
+                     callback(err);
                  }
 
             })
@@ -27,12 +54,17 @@ function validateusernamepassword(req, res, next){
             })
 }
 
-function parseCredentials(req, res, next) {
+function parseCredentials(req, callback) {
     //read other headers
-      
+      var err
       //get header with username, pwd
       var headerText = req.get('OtherHeaders');
-      if (headerText){
+      
+      if (!headerText){
+        err = new Error('Username and password were not provided');
+        err.tilia = true;
+        return next(err);
+      } else {
 
         var regexSeparator =  /\\r\\n{1}/ ;
         var arrUser = headerText.split(regexSeparator);
@@ -46,27 +78,16 @@ function parseCredentials(req, res, next) {
           user.username = username;
           user.pwd = pwd;
           req.user = user;
-          next();
-      
-
+          callback(null, req);
       } else {
-        next('Error: username and password are not valid');
+        err = new Error('Username and password were not provided');
+        err.tilia = true;
+        callback(err);
       }
 
     }
 
 
 module.exports = {
-    
-
-    parseCredentials: parseCredentials,
-    //todo server-side authorization
-    authorize: function(req, res, next){
-
-    },
-    validateusernamepassword: validateusernamepassword
-
-
+    authRequired: authrequired
 }
-
-//exports.authenticate

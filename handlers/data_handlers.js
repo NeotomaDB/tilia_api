@@ -64,6 +64,15 @@ function handlePostUpdate(req, res, next){
                       message: 'Called Method '+methodSubmitted
               });
             })
+            .catch(function(err){
+              res.status(500)
+              .json({
+                success: 0,
+                status: 'failure',
+                data: null,
+                message: 'Database error in function call as '+err
+              })
+            })
     
              
         })

@@ -18,7 +18,7 @@ const queryFunc = sql('./fun_query.sql')
 const schemFunc = sql('./get_schema.sql')
 
 function allFunctions (req, res, next) {
-
+  console.log("calling allFuctions");
   var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
   var method = Object.keys(req.query).includes('method')
 

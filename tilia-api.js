@@ -11,7 +11,8 @@
          var cors = require('cors');
 //     var passport = require('passport')
 //var LocalStrategy = require('passport-local').Strategy;
-  var auth = require('./auth/auth.js');
+         var auth = require('./auth/auth.js');
+          var err = require('./util/error.js');
 
 
 // create a rotating write stream
@@ -37,19 +38,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //check for authentication required conditions
-//is schema ts and not in ['ValidateUserName', 'ValidateSteward', and 'GetConstituentDatabases']
-
-//app.use(auth.authRequired)
-//app.use(auth.parseCredentials);
-//app.use(auth.validateusernamepassword);
-
-
-
+app.use(auth.authRequired);
 
 var data = require('./routes/data.js');
 
 app.use('/', data);
-
+app.use(err.errorHandler);
 
 app.all('*', function (req, res) {
   res.redirect('/api');
