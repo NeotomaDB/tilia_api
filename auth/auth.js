@@ -17,9 +17,10 @@ function authrequired(req, res, next){
     } else {
 
       console.log("methodPassed ", methodPassed)
+      var theSchema = methodPassed.split(".")[0];
       //see if method requires username, pw
       var unrestrictedMethods = ["ts.getsteward", "ts.checksteward", "ts.validateusername"];
-      if (unrestrictedMethods.indexOf(methodPassed) == -1){
+      if (unrestrictedMethods.indexOf(methodPassed) == -1 && theSchema == "ts" ){
         parseCredentials(req, function(err, req){
           if(err){return next(err);}
           validateusernamepassword(req, function(err){
