@@ -32,7 +32,12 @@ function handlePostUpdate(req, res, next){
     console.log('calling data_handlers handlePostUpdate with '+ JSON.stringify(req.body));
     var functionInputs = req.body.data;
     var methodSubmitted = req.body.method;
-
+    console.log('calling handlePostUpdate with method '+methodSubmitted);
+    if (!methodSubmitted){
+      var err = new Error("No method provided in the POST body");       
+       err.tilia = true;
+       return next(err);
+    }
 //1. validate method name
     db.func('ti.getprocedureinputparams',[methodSubmitted])  
         .then(function(data){
