@@ -66,6 +66,8 @@ function handlePostUpdate(req, res, next){
               });
             })
             .catch(function(err){
+              //show message in tilia error handler
+              err.tilia = true;
               res.status(500)
               .json({
                 success: 0,
@@ -78,6 +80,8 @@ function handlePostUpdate(req, res, next){
              
         })
         .catch(function (err) {
+              //show message in tilia error handler
+              err.tilia = true;
               res.status(500)
               .json({
                 status: 'failure',

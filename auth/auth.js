@@ -76,19 +76,28 @@ function parseCredentials(req, callback) {
 
         var regexSeparator =  /\\r\\n{1}/ ;
         var arrUser = headerText.split(regexSeparator);
-        var username = arrUser[0].split(':')[1];
-        var pwd = arrUser[1].split(':')[1];
+        console.log("arrUser is" + arrUser);
+        if(arrUser.length != 3){
+          err = new Error('OtherHeaders does not contain all three components');
+          err.tilia = true;
+          callback(err);
+        } else {
+          var username = arrUser[0].split(':')[1];
+          var pwd = arrUser[1].split(':')[1];
+          var constituentdatabase = arrUser[2].split(':')[1];
+        }
         
       }
 
-      if( username != null && pwd != null){
+      if( username != null && pwd != null && constituentdatabase != null){
           var user = {};
           user.username = username;
           user.pwd = pwd;
           req.user = user;
+          req.constituentdatabase = constituentdatabase;
           callback(null, req);
       } else {
-        err = new Error('OtherHeaders does not contain username and pwd');
+        err = new Error('OtherHeaders does not contain values for username, pwd, and constituentDatabase');
         err.tilia = true;
         callback(err);
       }
