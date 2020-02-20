@@ -30,6 +30,11 @@ function handleDelete(req, res, next){
 
 function handlePostUpdate(req, res, next){
     console.log('calling data_handlers handlePostUpdate with '+ JSON.stringify(req.body));
+    if(!req.body){
+      var err = new Error("No POST body found");       
+       err.tilia = true;
+       return next(err);
+    }
     var functionInputs = req.body.data;
     var methodSubmitted = req.body.method;
     console.log('calling handlePostUpdate with method '+methodSubmitted);

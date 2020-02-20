@@ -10,6 +10,7 @@ function doNothing(req, res, next){
 }
 
 function authrequired(req, res, next){
+     console.log("request received at "+ new Date().toGMTString());
      var typeHeaderText = req.get('Content-Type');
      console.log("typeHeaderText "+typeHeaderText);
       
