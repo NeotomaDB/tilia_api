@@ -10,6 +10,9 @@ function doNothing(req, res, next){
 }
 
 function authrequired(req, res, next){
+     var typeHeaderText = req.get('Content-Type');
+     console.log("typeHeaderText "+typeHeaderText);
+      
     var methodPassed = req.query.method || req.body.method;
 
     if (!methodPassed ){
@@ -66,7 +69,7 @@ function parseCredentials(req, callback) {
       console.log("parsing OtherHeaders");
       var headerText = req.get('OtherHeaders');
       console.log("headerText "+headerText);
-      
+
       if (!headerText){
         console.log("throwing headerText error");
         err = new Error('Header with username and password were not provided');
