@@ -69,44 +69,25 @@ function parseCredentials(req, callback) {
     //read other headers
       var err
       //get header with username, pwd
-      console.log("parsing OtherHeaders");
-      var headerText = req.get('OtherHeaders');
-      console.log("headerText "+headerText);
+      console.log("parsing headers pwd and username");
+      //var headerText = req.get('OtherHeaders');
+      var pwdText = req.get('pwd');
+      var usernameText = req.get('username');
 
-      if (!headerText){
-        console.log("throwing headerText error");
-        err = new Error('Header with username and password were not provided');
+      console.log("username and password "+usernameText+":"+pwdText);
+      if(!pwdText || !usernameText){
+        console.log("throwing missing pwd and/or username error");
+        err = new Error('Headers with username and password were not provided');
         err.tilia = true;
         callback(err);
       } else {
-
-        var regexSeparator =  /\\r\\n{1}/ ;
-        var arrUser = headerText.split(regexSeparator);
-        console.log("arrUser is" + arrUser);
-        if(arrUser.length < 2){
-          err = new Error('OtherHeaders does not contain both components');
-          err.tilia = true;
-          callback(err);
-        } else {
-          var username = arrUser[0].split(':')[1];
-          var pwd = arrUser[1].split(':')[1];
-          //var constituentdatabase = arrUser[2].split(':')[1];
-        }
-        
-      }
-
-      if( username != null && pwd != null ){
-        //&& constituentdatabase != null){
+          var username = usernameText;
+          var pwd = pwdText;
           var user = {};
           user.username = username;
           user.pwd = pwd;
           req.user = user;
-          //req.constituentdatabase = constituentdatabase;
-          callback(null, req);
-      } else {
-        err = new Error('OtherHeaders does not contain values for username, pwd, and constituentDatabase');
-        err.tilia = true;
-        callback(err);
+          callback(null, req);        
       }
 
     }
