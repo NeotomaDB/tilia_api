@@ -59,6 +59,8 @@ function validateusernamepassword(req, callback){
 
             })
             .catch(function (err) {
+              //present error details
+              err.tilia = true;
               return err
             })
 }

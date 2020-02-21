@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //check for authentication required conditions
-app.use(auth.authRequired);
+//app.use(auth.authRequired);
 
 var data = require('./routes/data.js');
 
