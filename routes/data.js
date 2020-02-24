@@ -20,9 +20,11 @@ router.get('/api/update', handlers.handleGetUpdate);
 
 router.get('/api', handlers.allfunctions);
 
-router.post('/api/update/write', handlers.handlePostUpdate);
+//deprecated
+//router.post('/api/update/write', handlers.handlePostUpdate);
 
-router.post('/api/update/write/batch', handlers.handlePostMultiUpdate);
+//handles single and batch requests
+router.post('/api/update/write', handlers.handlePostMultiUpdate);
 
 router.delete('/api/update', handlers.handleDelete);
 
