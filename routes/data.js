@@ -22,6 +22,8 @@ router.get('/api', handlers.allfunctions);
 
 router.post('/api/update/write', handlers.handlePostUpdate);
 
+router.post('/api/update/write/batch', handlers.handlePostMultiUpdate);
+
 router.delete('/api/update', handlers.handleDelete);
 
 module.exports = router;
