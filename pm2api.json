@@ -1,0 +1,12 @@
+{
+    "apps": [
+        {
+            "name": "tilia-api",
+            "cwd": ".",
+            "script": "npm",
+                        "args": "start",
+            "watch": true,
+            "ignore_watch": ["access.log", "nodejs", "node_modules", ".git"]
+                }
+            ]
+}

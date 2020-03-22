@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
     "start": "NODE_ENV=production node ./bin/www",
+=======
+    "start": "node ./bin/www",
+>>>>>>> 9224573199d45cf27717f7e33241960b57ba721e
     "dev_start": "NODE_ENV=development nodemon",
     "dev_www":  "NODE_ENV=development ./bin/www"
   },
@@ -11,20 +15,20 @@
     "bluebird": "^3.7.2",
     "body-parser": "~1.18.3",
     "cookie-parser": "^1.4.4",
-    "cors": "^2.8.5",
     "debug": "^4.1.1",
     "ejs": "^2.7.4",
     "express": "~4.16.4",
     "morgan": "~1.9.1",
-    "passport": "^0.4.0",
     "pg-promise": "^8.7.5",
-    "rotating-file-stream": "^2.0.2",
+    "rotating-file-stream": "^2.0.1",
+    "cors": "^2.8.5",
+    "passport": "^0.4.0",
     "serve-favicon": "~2.5.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",

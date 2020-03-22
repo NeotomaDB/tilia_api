@@ -15,9 +15,18 @@ router.get('/', (req, res) => {
     res.redirect('http://tilia-dev.neotomadb.org/api');
 });
 
+
+router.get('/api/update', handlers.handleGetUpdate);
+
 router.get('/api', handlers.allfunctions);
 
-router.post('/api', handlers.allfunctions);
+//deprecated
+//router.post('/api/update/write', handlers.handlePostUpdate);
+
+//handles single and batch requests
+router.post('/api/update/write', handlers.handlePostMultiUpdate);
+
+router.delete('/api/update', handlers.handleDelete);
 
 module.exports = router;
 
