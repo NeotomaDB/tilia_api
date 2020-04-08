@@ -11,14 +11,15 @@
     "bluebird": "^3.7.2",
     "body-parser": "~1.18.3",
     "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
     "debug": "^4.1.1",
     "ejs": "^2.7.4",
     "express": "~4.16.4",
     "morgan": "~1.9.1",
+    "passport": "^0.4.0",
+    "pg-monitor": "^1.4.0",
     "pg-promise": "^8.7.5",
     "rotating-file-stream": "^2.0.1",
-    "cors": "^2.8.5",
-    "passport": "^0.4.0",
     "serve-favicon": "~2.5.0"
   },
   "devDependencies": {

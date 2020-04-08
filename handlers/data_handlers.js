@@ -93,6 +93,7 @@ function handlePostMultiUpdate(req, res, next){
             console.log("Collection input parameters is: "+JSON.stringify(arrOfPgParams));
             var numOfCalls = arrOfPgParams.length;
             var arrOfCalls = [];
+            console.log("Number of function calls to make: "+numOfCalls);
             
             requestFactory(methodSubmitted, arrOfPgParams, function(arrOfCalls){
                 db.task(function(t){
