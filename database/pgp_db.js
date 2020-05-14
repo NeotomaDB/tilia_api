@@ -8,6 +8,10 @@ var options = {
 };
 
 const pgp = require('pg-promise')(options);
+const monitor = require('pg-monitor');
+monitor.attach(options);
+
+const connectpath = '../../node_config/db_connect.json';
 
 if (process.env.NODE_ENV === "development")
 {

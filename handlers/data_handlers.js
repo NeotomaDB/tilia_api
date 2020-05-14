@@ -105,46 +105,39 @@ function handlePostMultiUpdate(req, res, next)
             var numOfCalls = arrOfPgParams.length;
             var arrOfCalls = [];
 
-            requestFactory(methodSubmitted, arrOfPgParams, function (arrOfCalls)
-            {
-                db.task(function (t)
-                    {
-                        return t.batch(arrOfCalls)
-
-                    })
-                    .then(function (theResult)
-                    {
-                        console.log("batch result " + JSON.stringify(theResult))
-                        //have array of arrays containing object key|newid
-                        var batchData = [];
-                        theResult.forEach(function (r)
-                        {
-                            if (r[0])
-                            {
-                                batchData.push(r[0][methodSansSchema])
-                            }
-                        })
-                        //return response
-                        res.status(200)
-                            .json(
-                            {
-                                status: 'success',
-                                data: batchData,
-                                message: 'Called batch ' + numOfCalls + ' times for method ' + methodSubmitted
-                            });
-                    })
-                    .catch(function (err)
-                    {
-                        //show message in tilia error handler
-                        err.tilia = true;
-                        res.status(500)
-                            .json(
-                            {
-                                success: 0,
-                                status: 'failure',
-                                data: null,
-                                message: 'Database error in function call as ' + err
-                            })
+            console.log("Number of function calls to make: "+numOfCalls);
+            
+            requestFactory(methodSubmitted, arrOfPgParams, function(arrOfCalls){
+                db.task(function(t){
+                  return t.batch(arrOfCalls)
+                    
+                })
+                .then(function(theResult){
+                  console.log("batch result "+ JSON.stringify(theResult))
+                  //have array of arrays containing object key|newid
+                  var batchData = [];
+                  theResult.forEach(function(r){
+                    if(r[0]){
+                      batchData.push(r[0][methodSansSchema])
+                    }
+                  })
+                  //return response
+                  res.status(200)
+                  .json({
+                    status: 'success',
+                    data: batchData,
+                    message: 'Called batch ' + numOfCalls +' times for method '+methodSubmitted
+                  });
+                })
+                .catch(function(err){
+                    //show message in tilia error handler
+                    err.tilia = true;
+                    res.status(500)
+                    .json({
+                      success: 0,
+                      status: 'failure',
+                      data: null,
+                      message: 'Database error in function call as '+err
                     })
             })
             /*

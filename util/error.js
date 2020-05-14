@@ -4,7 +4,8 @@ function errorHandler(err, req, res, next){
   if(err.tilia){
       res.end(JSON.stringify({error: err.message}));
   } else {
-      res.end(JSON.stringify({error: 'Internal Server Error'}));
+      //res.end(JSON.stringify({error: 'Internal Server Error'}));
+      res.end(JSON.stringify({error: err.message}));
   }
 }
 
