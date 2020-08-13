@@ -1,40 +1,35 @@
-var promise = require('bluebird');
+var promise = require('bluebird')
 
-const fs = require('fs')
+// const fs = require('fs')
 
 var options = {
-    // Initialization Options
-    promiseLib: promise
-};
-
-const pgp = require('pg-promise')(options);
-const monitor = require('pg-monitor');
-monitor.attach(options);
-
-const connectpath = '../../node_config/db_connect.json';
-
-if (process.env.NODE_ENV === "development")
-{
-    var connectpath = '../db_connect.json'
-}
-else
-{
-    var connectpath = './db_connect.json';
-    console.log(process.env.NODE_ENV)
+  // Initialization Options
+  promiseLib: promise
 }
 
-const ctStr = require(connectpath);
+const pgp = require('pg-promise')(options)
+const monitor = require('pg-monitor')
+monitor.attach(options)
 
-const db = pgp(ctStr);
+// var connectpath = '../../node_config/db_connect.json'
+
+if (process.env.NODE_ENV === 'development') {
+  var connectpath = '../db_connect.json'
+} else {
+  connectpath = './db_connect.json'
+  console.log(process.env.NODE_ENV)
+}
+
+const ctStr = require(connectpath)
+
+const db = pgp(ctStr)
 
 db.proc('version')
-    .then(data =>
-    {
-        console.log(data.version);
-    })
-    .catch(error =>
-    {
-        console.log("error connecting");
-    });
+  .then(data => {
+    console.log(data.version)
+  })
+  .catch(error => {
+    console.log('error connecting')
+  })
 
-module.exports = db;
+module.exports = db
