@@ -12,7 +12,7 @@ var handlers = require('../handlers/data_handlers');
 
 router.get('/', (req, res) =>
 {
-    res.redirect('http://tilia-dev.neotomadb.org/api');
+    res.redirect('http://tilia.neotomadb.org/api');
 });
 
 // Runs, but pulls only from URL query parameters. (Check if this is being used)
