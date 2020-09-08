@@ -1,5 +1,6 @@
 db_connect.json
 .data
+.env
 
 .eslintrc.js
 .eslintrc.json

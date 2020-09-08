@@ -8,6 +8,8 @@ var bodyParser = require('body-parser')
 var morgan = require('morgan')
 var fs = require('fs')
 var app = express()
+const dotenv = require('dotenv');
+dotenv.config();
 
 var cors = require('cors')
 //     var passport = require('passport')
@@ -47,6 +49,7 @@ app.all('*', function (req, res) {
 })
 
 // in production, port is 3001 and server started in script 'www'
+// The variable is stored in the gitignored `.env` file.
 if (process.env.NODE_ENV === 'development') {
   app.listen(3000)
 }
