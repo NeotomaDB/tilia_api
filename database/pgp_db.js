@@ -1,8 +1,8 @@
-var promise = require('bluebird')
+const promise = require('bluebird')
 
 // const fs = require('fs')
 
-var options = {
+const options = {
   // Initialization Options
   promiseLib: promise
 }
@@ -23,13 +23,5 @@ if (process.env.NODE_ENV === 'development') {
 const ctStr = require(connectpath)
 
 const db = pgp(ctStr)
-
-db.proc('version')
-  .then(data => {
-    console.log(data.version)
-  })
-  .catch(error => {
-    console.log('error connecting')
-  })
 
 module.exports = db
