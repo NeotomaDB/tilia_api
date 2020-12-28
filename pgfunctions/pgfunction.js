@@ -25,16 +25,16 @@ const queryFunc = sql('./fun_query.sql')
 const schemFunc = sql('./get_schema.sql')
 
 function allFunctions(req, res, next) {
-  console.log("calling allFunctions");
+  // console.log("calling allFunctions");
   var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
   var method = Object.keys(req.query).includes('method')
 
   // The call to the documentation JSON object occurs if the user either
   // enters no parameters, or the term 'method' fails to appear in the
   // documentation.
-  console.log("noParam is " + noParam);
+  // console.log("noParam is " + noParam);
   if (noParam | !method) {
-    console.log("calling all functions");
+    // console.log("calling all functions");
     var dbFuncs = db.any(queryFunc)
       .then(function(data) {
         res.status(200)
@@ -56,19 +56,19 @@ function allFunctions(req, res, next) {
     var allParams = req.query;
     var sqlMethod = allParams.method;
 
-    console.log('allParams: ' + JSON.stringify(allParams));
-    console.log('sqlMethod: ' + sqlMethod);
+    // console.log('allParams: ' + JSON.stringify(allParams));
+    // console.log('sqlMethod: ' + sqlMethod);
 
     if (sqlMethod) {
       var arrFuncNameParts = sqlMethod.split('.');
       var funcSchema = arrFuncNameParts[0];
       var funcName = arrFuncNameParts[1];
-      console.log('function schema: ' + funcSchema + ' function name: ' + funcName);
+      // console.log('function schema: ' + funcSchema + ' function name: ' + funcName);
     } else {
       next("Error: function must be schema qualified");
     }
 
-    console.log('allParams passed are: ' + JSON.stringify(allParams));
+    // console.log('allParams passed are: ' + JSON.stringify(allParams));
     // First validate that the method is in the accepted set:
     var schema = db.any(queryFunc)
       .then(function(data) {
@@ -98,14 +98,14 @@ function allFunctions(req, res, next) {
               }
 
               sqlCall = sqlCall + ')'
-              console.log('sqlCall: ' + sqlCall);
+              // console.log('sqlCall: ' + sqlCall);
               return (sqlCall)
             })
             .then(function(sqlStatement) {
-              console.log('sqlStatement: ' + sqlStatement);
+              // console.log('sqlStatement: ' + sqlStatement);
               var dbCall = db.any(sqlStatement)
                 .then(function(data) {
-                  console.log('function results: ' + JSON.stringify(data));
+                  // console.log('function results: ' + JSON.stringify(data));
                   res.status(200)
                     .json({
                       status: 'success',
