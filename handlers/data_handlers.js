@@ -39,8 +39,8 @@ function requestFactory (theMethod, paramCollection, callback) {
 }
 
 function handlePostMultiUpdate (req, res, next) {
-  console.log('calling data_handlers handlePostUpdate with ' + JSON.stringify(req.body))
-  console.log('handlePostUpdate obtaining all headers as ' + JSON.stringify(req.headers))
+  console.log('calling data_handlers handlePostMultiUpdate with:\n ' + JSON.stringify(req.body))
+  console.log('handlePostMultiUpdate obtaining all headers as ' + JSON.stringify(req.headers))
   if (!req.body) {
     var err = new Error('No POST body found')
     err.tilia = true
