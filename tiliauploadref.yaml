@@ -1,0 +1,221 @@
+surfacesample:
+  steps:
+    - order: 1
+      call: insertsite
+      optional: false
+      example: >
+        select * from ts.insertsite('Plateau 2',-136.31295,58.95467,-136.31759,58.95284,67,1.03,'The Lake formed about 10 years before present by glacial retreat',null)
+      repeated: false
+    - order: 2
+      call: ts.insertlakeparameter
+      optional: true
+      example: select * from ts.insertlakeparameter(27948,1,4.5)
+      repeated: true
+    - order: 3
+      call: ts.insertsitegeopol
+      example: select * from ts.insertsitegeopol(27948,6129)
+      repeated: true
+      optional: false
+    - order: 4
+      call: ts.insertcollectionunit
+      example: >
+        select * from ts.insertcollectionunit('PLAT2',27948,5,29,'PLAT2','1988-07-01','Piston corer mounted on rigid drive rods',null,null,null,null,null,null,null,null,null,'Deep water zone','Collected: July 1988, May 1989, September 1990')
+      repeated: false 
+      optional: false
+    - order: 5
+      call: ts.insertcollector
+      example: select * from ts.insertcollector(37686,34,1)
+      repeated: true
+      optional: true
+    - order: 6
+      call: ts.insertanalysisunit
+      example: select * from ts.insertanalysisunit(37686,'Plateau2_SS',0.25,0.5,null,'false',null,null)
+      repeated: true
+      optional: false
+    - order: 7
+      call: ts.insertchronology
+      example: >
+        select * from ts.insertchronology(37686,2,448,'true','Collection date','2021-08-23','collection date',-50,-40,null)
+      repeated: true
+      optional: false
+    - order: 8
+      call: ts.insertchroncontrol
+      example: >
+        select * from ts.insertchroncontrol(36918,74,381285,null,null,2,-38,null,null,null)
+      repeated: true
+      optional: false
+    - order: 9
+      call: ts.insertdataset
+      example: >
+        select * from ts.insertdataset(37686,13,null,'Diatom slides are at Dr. Sheri Fritz lab at the University of Nebraska.')
+      repeated: false
+      optional: false
+    - order: 9
+      call: ts.insertdatasetpi
+      example: select * from ts.insertdatasetpi(51805,34,1)
+      repeated: true
+      optional: false
+    - order: 10
+      call: ts.insertdataprocessor
+      example: select * from ts.insertdataprocessor(51805,448)
+      repeated: true
+      optional: false
+    - order: 11
+      call: ts.insertdatasetpublication
+      example: select * from ts.insertdatasetpublication(51805,9866,'true')
+      repeated: true
+      optional: true
+    - order: 12
+      call: ts.insertdatasetrepository
+      example: select * from ts.insertdatasetrepository(51805,222,null)
+      repeated: false
+      optional: true
+    - order: 13
+      call: ts.insertdatasetdatabase
+      example: select * from ts.insertdatasetdatabase(51805,13)
+      repeated: false
+      optional: false
+    - order: 14
+      call: ts.insertsample
+      example: ts.insertsample(381285,51805,null,null,null,null,null,null,null)
+      repeated: true
+      optional: false
+    - order: 15
+      call: ts.insertsampleanalyst
+      example: select * from ts.insertsampleanalyst(503717,607,1)
+      repeated: false
+      optional: true
+    - order: 16
+      call: ts.insertsampleage
+      example: select * from ts.insertsampleage(503717,36918,-38,null,null)
+      repeated: false
+      optional: true
+    - order: 17
+      call: ts.insertdata
+      example: select * from ts.insertdata(503717,29999,1)
+      repeated: true
+      optional: true
+    - order: 18
+      call: ts.insertdatasetsubmission
+      example: select * from ts.insertdatasetsubmission(51805,13,448,1,'2021-08-23',null)
+      optional: false
+      repeated: false
+pollen:
+  steps:
+    - order: 1
+      call:
+        - call: select * from ts.insertvariable(38240,141,19,null)
+        - call: >
+          select * from ts.insertpublication(1,'1984','Barnosky, C.W. 1984. Late Miocene Vegetational and Climatic Variations Inferred from a Pollen Record in Northwest Wyoming. Science 223(4631):49-51. https://www.jstor.org/stable/1692552.','Late Miocene Vegetational and Climatic Variations Inferred from a Pollen Record in Northwest Wyoming','Science','223','4631','49-51',null,null,null,null,null,null,null,null,null,'https://www.jstor.org/stable/1692552',null,null,null,null,null)
+        - call: select * from ts.insertpublicationauthors(17330,1,'Barnosky','C.W.',null,161)        
+      description: >
+        Adding a set of objects for reference in the later upload.
+    - order: 2
+      call: ts.insertsite
+      optional: false
+      example: >
+        select * from ts.insertsite('Kelly Road',-110.707,43.57,-110.707,43.57,null,null,'The section is the upper part of the Teewinot Fm., deposited in a large, freshwater lake.','Site location given by J.D. Love field notes as SE1/4 sec. 25, T42N, R116W. Site is also Teewinot Fm. type section.')
+      repeated: false
+    - order: 3
+      call: ts.insertlakeparameter
+      optional: true
+      example: select * from ts.insertlakeparameter(27948,1,4.5)
+      repeated: true
+    - order: 4
+      call: ts.insertsitegeopol
+      example: select * from ts.insertsitegeopol(27948,6129)
+      repeated: true
+      optional: false
+    - order: 4
+      call: ts.insertcollectionunit
+      example: >
+        select * from ts.insertcollectionunit('KLYRD',27970,4,24,'Kelly Road','1979-01-01',null,null,null,null,null,null,null,null,null,null,null,'Depths are given as cm above the base of the stratigraphic section (i.e. 0 is the bottom of the measured section.')
+      repeated: false 
+      optional: false
+    - order: 5
+      call: ts.insertcollector
+      example: select * from ts.insertcollector(37731,161,1)
+      repeated: true
+      optional: true
+    - order: 6
+      call: ts.insertanalysisunit
+      example: >
+        select * from ts.insertanalysisunit(37731,null,31,null,null,'false',null,'1')
+      repeated: true
+      optional: false
+    - order: 7
+      call: ts.insertchronology
+      example: >
+        select * from ts.insertchronology(37686,2,448,'true','Collection date','2021-08-23','collection date',-50,-40,null)
+      repeated: true
+      optional: false
+    - order: 8
+      call: ts.insertchroncontrol
+      example: >
+        select * from ts.insertchroncontrol(36918,74,381285,null,null,2,-38,null,null,null)
+      repeated: true
+      optional: false
+    - order: 9
+      call: ts.insertdataset
+      example: >
+        select * from ts.insertdataset(37731,3,'Barnosky 1984 Pollen','No direct geochronology is available.
+      repeated: false
+      optional: false
+    - order: 10
+      call: ts.insertdatasetpi
+      example: select * from ts.insertdatasetpi(51805,34,1)
+      repeated: true
+      optional: false
+    - order: 11
+      call: ts.insertdataprocessor
+      example: select * from ts.insertdataprocessor(51805,448)
+      repeated: true
+      optional: false
+    - order: 12
+      call: ts.insertdatasetpublication
+      example: select * from ts.insertdatasetpublication(51805,9866,'true')
+      repeated: true
+      optional: true
+    - order: 13
+      call: ts.insertdatasetrepository
+      example: select * from ts.insertdatasetrepository(51805,222,null)
+      repeated: false
+      optional: true
+    - order: 14
+      call: ts.insertsynonymy
+      example: >
+        select * from ts.insertsynonymy(51849,391,15059,'true',null,null,17160,null)
+      repeated: true
+      optional: true
+    - order: 15
+      call: ts.insertdatasetdatabase
+      example: select * from ts.insertdatasetdatabase(51805,13)
+      repeated: false
+      optional: false
+    - order: 16
+      call: ts.insertsample
+      example: >
+        select * from ts.insertsample(381330,51849,null,null,'1980-02-05',null,'CB-79-1A',null,null)
+      repeated: true
+      optional: false
+    - order: 17
+      call: ts.insertsampleanalyst
+      example: select * from ts.insertsampleanalyst(503830,161,1)
+      repeated: false
+      optional: true
+    - order: 18
+      call: ts.insertsampleage
+      example: select * from ts.insertsampleage(503717,36918,-38,null,null)
+      repeated: false
+      optional: true
+    - order: 19
+      call: ts.insertdata
+      example: select * from ts.insertdata(503717,29999,1)
+      repeated: true
+      optional: true
+    - order: 20
+      call: ts.insertdatasetsubmission
+      example: >
+        select * from ts.insertdatasetsubmission(51849,6,17160,1,'2021-08-23',null)
+      optional: false
+      repeated: false
