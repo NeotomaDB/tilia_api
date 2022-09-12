@@ -39,13 +39,29 @@ function requestFactory (theMethod, paramCollection, callback) {
 }
 
 function handlePostMultiUpdate (req, res, next) {
-  console.log('calling data_handlers handlePostMultiUpdate with:\n ' + JSON.stringify(req.body))
-  console.log('handlePostMultiUpdate obtaining all headers as ' + JSON.stringify(req.headers))
   if (!req.body) {
     var err = new Error('No POST body found')
     err.tilia = true
     return next(err)
   }
+
+  try {
+    var content = JSON.stringify(req.body)
+    var header = JSON.stringify(req.headers)
+  } catch (exception) {
+    console.log('TILIAERROR: Body failed to parse with text: ' + req.body)
+    res.status(500)
+      .json({
+        success: 0,
+        status: 'failure',
+        data: exception.message,
+        message: 'JSON Parsing error ' + exception
+      })
+  }
+
+  console.log('calling data_handlers handlePostUpdate with ' + content)
+  console.log('handlePostUpdate obtaining all headers as ' + header)
+  
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
   var methodSansSchema = methodSubmitted.split('.')[1]
@@ -120,7 +136,7 @@ function handlePostMultiUpdate (req, res, next) {
                 success: 0,
                 status: 'failure',
                 data: null,
-                message: 'Database error in function call as ' + err
+                message: 'Database error in function call as ' + err.message
               })
           })
         /*
@@ -208,7 +224,7 @@ function handlePostUpdate (req, res, next) {
         .json({
           status: 'failure',
           data: null,
-          message: 'Error in handlePostUpdate.' + err
+          message: 'Error in handlePostUpdate.' + err.message
         })
     })
 }

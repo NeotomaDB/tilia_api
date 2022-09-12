@@ -1,15 +1,14 @@
 var express = require('express')
 var path = require('path')
 var favicon = require('serve-favicon')
-var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 // var rfs = require('rotating-file-stream')
 var morgan = require('morgan')
 var fs = require('fs')
 var app = express()
-const dotenv = require('dotenv');
-dotenv.config();
+const dotenv = require('dotenv')
+dotenv.config()
 
 var cors = require('cors')
 //     var passport = require('passport')
@@ -17,10 +16,13 @@ var cors = require('cors')
 // var auth = require('./auth/auth.js')
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
+  { flags: 'a',
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'log') })
 
 // setup the logger
-app.enable('trust proxy');
+app.enable('trust proxy')
 app.use(morgan(':date[iso]\t:remote-addr\t:method\t:url\t:status\t:res[content-length]\t:response-time[0]\t:user-agent', { stream: accessLogStream }))
 
 // uncomment after placing your favicon in /public
