@@ -61,7 +61,7 @@ function handlePostMultiUpdate (req, res, next) {
 
   console.log('calling data_handlers handlePostUpdate with ' + content)
   console.log('handlePostUpdate obtaining all headers as ' + header)
-  
+
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
   var methodSansSchema = methodSubmitted.split('.')[1]
@@ -103,7 +103,6 @@ function handlePostMultiUpdate (req, res, next) {
 
       console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
       var numOfCalls = arrOfPgParams.length
-      var arrOfCalls = []
 
       console.log('Number of function calls to make: ' + numOfCalls)
 
@@ -139,18 +138,6 @@ function handlePostMultiUpdate (req, res, next) {
                 message: 'Database error in function call as ' + err.message
               })
           })
-        /*
-        .catch(function (err) {
-              // show message in tilia error handler
-              err.tilia = true
-              res.status(500)
-              .json({
-                status: 'failure',
-                data: null,
-                message: 'Error in handlePostMultiUpdate.'+err
-              })
-        })
-        */
       })
     })
 }
