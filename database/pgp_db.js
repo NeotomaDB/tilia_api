@@ -11,8 +11,6 @@ const pgp = require('pg-promise')(options)
 const monitor = require('pg-monitor')
 monitor.attach(options)
 
-// var connectpath = '../../node_config/db_connect.json'
-
 if (process.env.NODE_ENV === 'development') {
   var connectpath = '../db_connect.json'
 } else {

@@ -65,61 +65,72 @@ function allFunctions (req, res, next) {
       next('Error: function must be schema qualified')
     }
 
+    // Here we wind up with the different schema.
+
     // First validate that the method is in the accepted set:
-    var schema = db.any(queryFunc)
-      .then(function (data) {
-        // Check that sqlMethod is in the set of data[name]:
-        var methods = data.map(x => x.name)
-        return (methods)
-      })
-      .then(function (data) {
-        if (data.includes(sqlMethod)) {
-          // If the function called by the user is in the set of existing Postgres functions:
+    if (funcSchema == 'ti') {
+      var schema = db.any(queryFunc)
+        .then(function (data) {
+          // Check that sqlMethod is in the set of data[name]:
+          var methods = data.map(x => x.name)
+          return (methods)
+        })
+        .then(function (data) {
+          if (data.includes(sqlMethod)) {
+            // If the function called by the user is in the set of existing Postgres functions:
 
-          var schema = db.any(schemFunc, [funcName])
-            .then(function (data) {
-              var sqlCall = 'SELECT * FROM ' + funcSchema + '.' + funcName + '('
+            var schema = db.any(schemFunc, [funcName])
+              .then(function (data) {
+                var sqlCall = 'SELECT * FROM ' + funcSchema + '.' + funcName + '('
 
-              for (var i = 1; i < Object.keys(allParams).length; i++) {
-                sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
+                for (var i = 1; i < Object.keys(allParams).length; i++) {
+                  sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
 
-                if (i < Object.keys(allParams).length - 1) {
-                  sqlCall = sqlCall + ', '
+                  if (i < Object.keys(allParams).length - 1) {
+                    sqlCall = sqlCall + ', '
+                  }
                 }
-              }
 
-              sqlCall = sqlCall + ')'
-              return (sqlCall)
-            })
-            .then(function (sqlStatement) {
-              var dbCall = db.any(sqlStatement)
-                .then(function (data) {
-                  res.status(200)
-                    .json({
-                      status: 'success',
-                      data: data,
-                      message: 'Retrieved all tables'
-                    })
-                })
-                .catch(function (err) {
-                  res.status(500)
-                    .json({
-                      status: 'failure',
-                      data: err.message,
-                      message: 'Error attempting to execute Neotoma Tilia function.'
-                    })
-                })
-              return (dbCall)
-            })
-        } else {
-          res.status(500)
-            .json({
-              status: 'failure',
-              data: null,
-              message: 'Function is not in the set of supported Neotoma Tilia functions.'
-            })
-        }
-      })
+                sqlCall = sqlCall + ')'
+                return (sqlCall)
+              })
+              .then(function (sqlStatement) {
+                var dbCall = db.any(sqlStatement)
+                  .then(function (data) {
+                    res.status(200)
+                      .json({
+                        status: 'success',
+                        data: data,
+                        message: 'Retrieved all tables'
+                      })
+                  })
+                  .catch(function (err) {
+                    res.status(500)
+                      .json({
+                        status: 'failure',
+                        data: err.message,
+                        message: 'Error attempting to execute Neotoma Tilia function.'
+                      })
+                  })
+                return (dbCall)
+              })
+          } else {
+            res.status(500)
+              .json({
+                status: 'failure',
+                data: null,
+                message: 'Function is not in the set of supported Neotoma Tilia functions.'
+              })
+          }
+        })
+    } else {
+      res.status(500)
+        .json({
+          status: 'failure',
+          data: null,
+          message: 'You cannot call a ts method through a GET call.'
+        })
+    }
   }
   return (schema)
 }

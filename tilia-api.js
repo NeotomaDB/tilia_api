@@ -53,8 +53,9 @@ app.all('*', function (req, res) {
 
 // in production, port is 3001 and server started in script 'www'
 // The variable is stored in the gitignored `.env` file.
-if (process.env.NODE_ENV === 'development') {
-  app.listen(3000)
-}
+// This is managed in the www folder.
+// if (process.env.NODE_ENV === 'development') {
+//   app.listen(3006)
+// }
 
 module.exports = app
