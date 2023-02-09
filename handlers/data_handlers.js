@@ -10,7 +10,9 @@ var pgp = db.$config.pgp
 */
 
 function handleGetUpdate (req, res, next) {
-  console.log('calling handleGetUpdate')
+  // This just redirects to the all function output.
+  // var date = new Date()
+  // console.log(date.toISOString + ' calling handleGetUpdate')
   var pgFunk = require('../pgfunctions/pgfunction.js')
   pgFunk.allFunctions(req, res, next)
 }
@@ -34,7 +36,9 @@ function requestFactory (theMethod, paramCollection, callback) {
     var theFunction = db.func(theMethod, c)
     taskBatch.push(theFunction)
   })
-  console.log('taskBatch is ' + JSON.stringify(taskBatch))
+  var date = new Date()
+
+  console.log(date.toISOString() + ' {"taskBatch": ' + JSON.stringify(taskBatch) + '}')
   callback(taskBatch)
 }
 
@@ -63,6 +67,8 @@ function handlePostMultiUpdate (req, res, next) {
       })
   }
 
+  var date = new Date()
+  console.log(date.toISOString() + ' {"body": ' + content + ', "header":' + header + '}')
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
   var methodSansSchema = methodSubmitted.split('.')[1]
@@ -75,14 +81,14 @@ function handlePostMultiUpdate (req, res, next) {
         data: null,
         message: 'The API requires a valid method submitted in teh body content.'
       })
+
   }
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
       // returns array of object
       //  { 'name': '_units', 'type': 'character varying', 'isdefault': false, 'paramorder': 1 }
-
-      console.log('handlePostMultiRequest data: ' + JSON.stringify(data))
+      // console.log('handlePostMultiRequest data: ' + JSON.stringify(data))
 
       var arrOfPgParams = []
 
@@ -90,10 +96,10 @@ function handlePostMultiUpdate (req, res, next) {
       if (data.length > 0) {
         // process array with one collection for each method call
         functionInputs.forEach(function (d, i) {
-          console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))
+          // console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))
           var pgParamArray = []
           data.forEach(function (e, i) {
-            console.log('Input ' + e.name + ' has value ' + d[e.name])
+            // console.log('Input ' + e.name + ' has value ' + d[e.name])
             pgParamArray.push(d[e.name])
           })
           // add array of input values to batch collection
@@ -101,17 +107,17 @@ function handlePostMultiUpdate (req, res, next) {
         })
       }
 
-      console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
+      // console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
       var numOfCalls = arrOfPgParams.length
 
-      console.log('Number of function calls to make: ' + numOfCalls)
+      // console.log('Number of function calls to make: ' + numOfCalls)
 
       requestFactory(methodSubmitted, arrOfPgParams, function (arrOfCalls) {
         db.task(function (t) {
           return t.batch(arrOfCalls)
         })
           .then(function (theResult) {
-            console.log('batch result ' + JSON.stringify(theResult))
+            // console.log('batch result ' + JSON.stringify(theResult))
             // have array of arrays containing object key|newid
             var batchData = []
             theResult.forEach(function (r) {
