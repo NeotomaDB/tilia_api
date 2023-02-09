@@ -43,6 +43,8 @@ function allFunctions (req, res, next) {
           })
       })
       .catch(function (err) {
+        var date = new Date();
+        console.log(date.toISOString() + ': ' + err.message)
         return res.status(500)
           .json({
             success: 0,
@@ -68,7 +70,7 @@ function allFunctions (req, res, next) {
     // Here we wind up with the different schema.
 
     // First validate that the method is in the accepted set:
-    if (funcSchema == 'ti' || funcName === 'validateusername' || funcName === 'validatesteward' || funcName === 'checksteward') {
+    if (funcSchema === 'ti' || funcName === 'validateusername' || funcName === 'validatesteward' || funcName === 'checksteward') {
       var schema = db.any(queryFunc)
         .then(function (data) {
           // Check that sqlMethod is in the set of data[name]:
