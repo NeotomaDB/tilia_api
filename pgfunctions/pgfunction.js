@@ -4,6 +4,7 @@ const path = require('path')
 // get global database object
 var db = require('../database/pgp_db')
 var pgp = db.$config.pgp
+
 pgp.pg.types.setTypeParser(20, function (val) {
   return parseInt(val)
 })
@@ -30,11 +31,11 @@ function allFunctions (req, res, next) {
 
   // The call to the documentation JSON object occurs if the user either
   // enters no parameters, or the term 'method' fails to appear in the
-  // documentation.
+  // user query string.
   if (noParam | !method) {
     var dbFuncs = db.any(queryFunc)
       .then(function (data) {
-        res.status(200)
+        return res.status(200)
           .json({
             success: 1,
             status: 'success',
@@ -43,7 +44,7 @@ function allFunctions (req, res, next) {
           })
       })
       .catch(function (err) {
-        var date = new Date();
+        var date = new Date()
         console.log(date.toISOString() + ': ' + err.message)
         return res.status(500)
           .json({
@@ -53,8 +54,6 @@ function allFunctions (req, res, next) {
             query: queryFunc
           })
       })
-
-    return dbFuncs
   } else {
     var allParams = req.query
     var sqlMethod = allParams.method
