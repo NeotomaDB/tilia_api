@@ -68,7 +68,7 @@ function allFunctions (req, res, next) {
     // Here we wind up with the different schema.
 
     // First validate that the method is in the accepted set:
-    if (funcSchema == 'ti') {
+    if (funcSchema == 'ti' || funcName === 'validateusername' || funcName === 'validatesteward' || funcName === 'checksteward') {
       var schema = db.any(queryFunc)
         .then(function (data) {
           // Check that sqlMethod is in the set of data[name]:
