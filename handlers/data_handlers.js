@@ -79,7 +79,7 @@ function handlePostMultiUpdate (req, res, next) {
         success: 0,
         status: 'failure',
         data: null,
-        message: 'The API requires a valid method submitted in teh body content.'
+        message: 'The API requires a valid method submitted in thh body content.'
       })
 
   }

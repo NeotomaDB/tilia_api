@@ -65,11 +65,10 @@ function allFunctions (req, res, next) {
     } else {
       next('Error: function must be schema qualified')
     }
-
+    
     // Here we wind up with the different schema.
-
-    // First validate that the method is in the accepted set:
-    if (funcSchema === 'ti' || funcName === 'validateusername' || funcName === 'validatesteward' || funcName === 'checksteward') {
+    // First validate that the method is in the accepted set for GET calls:
+    if (funcSchema !== 'ts' || ['validateusername', 'validatesteward', 'checksteward'].includes(funcName)) {
       var schema = db.any(queryFunc)
         .then(function (data) {
           // Check that sqlMethod is in the set of data[name]:
@@ -80,7 +79,7 @@ function allFunctions (req, res, next) {
           if (data.includes(sqlMethod)) {
             // If the function called by the user is in the set of existing Postgres functions:
 
-            var schema = db.any(schemFunc, [funcName])
+            db.any(schemFunc, [funcName])
               .then(function (data) {
                 var sqlCall = 'SELECT * FROM ' + funcSchema + '.' + funcName + '('
 
