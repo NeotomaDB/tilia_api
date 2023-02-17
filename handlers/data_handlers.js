@@ -1,6 +1,7 @@
 // get global database object
 var db = require('../database/pgp_db')
 var pgp = db.$config.pgp
+const readLastLines = require('read-last-lines');
 
 /*
  1. validate method name
@@ -28,6 +29,17 @@ function handleDelete (req, res, next) {
       message: 'Called DELETE api/update'
     })
 
+}
+
+function returnLog(req, res, next) {
+  readLastLines.read('log.txt', req.params.lines)
+    .then((lines) => 
+      res.status(200)
+        .json({
+          success: 1,
+          data: lines,
+          message: 'Log returned.'
+        }))
 }
 
 function requestFactory (theMethod, paramCollection, callback) {
@@ -224,5 +236,6 @@ module.exports = {
   // handlePostUpdate: handlePostUpdate,
   handlePostMultiUpdate: handlePostMultiUpdate,
   handleGetUpdate: handleGetUpdate,
-  handleDelete: handleDelete
+  handleDelete: handleDelete,
+  handleLogs: returnLog
 }
