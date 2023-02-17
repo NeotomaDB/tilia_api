@@ -1,6 +1,7 @@
 // get global database object
 var db = require('../database/pgp_db')
 var pgp = db.$config.pgp
+const readLastLines = require('read-last-lines');
 
 /*
  1. validate method name
@@ -10,7 +11,9 @@ var pgp = db.$config.pgp
 */
 
 function handleGetUpdate (req, res, next) {
-  console.log('calling handleGetUpdate')
+  // This just redirects to the all function output.
+  // var date = new Date()
+  // console.log(date.toISOString + ' calling handleGetUpdate')
   var pgFunk = require('../pgfunctions/pgfunction.js')
   pgFunk.allFunctions(req, res, next)
 }
@@ -28,61 +31,76 @@ function handleDelete (req, res, next) {
 
 }
 
+function returnLog(req, res, next) {
+  readLastLines.read('log.txt', req.params.lines)
+    .then((lines) => 
+      res.status(200)
+        .json({
+          success: 1,
+          data: lines,
+          message: 'Log returned.'
+        }))
+}
+
 function requestFactory (theMethod, paramCollection, callback) {
   var taskBatch = []
   paramCollection.forEach(function (c) {
     var theFunction = db.func(theMethod, c)
     taskBatch.push(theFunction)
   })
-  console.log('taskBatch is ' + JSON.stringify(taskBatch))
+  var date = new Date()
+
+  console.log(date.toISOString() + ' {"taskBatch": ' + JSON.stringify(taskBatch) + '}')
   callback(taskBatch)
 }
 
 function handlePostMultiUpdate (req, res, next) {
-  if (!req.body) {
-    var err = new Error('No POST body found')
-    err.tilia = true
-    return next(err)
+  if (Object.keys(req.body).length === 0) {
+    return res.status(500)
+      .json({
+        success: 0,
+        status: 'failure',
+        message: 'POST methods require a body element that includes valid method and data parameters.'
+      })
   }
 
   try {
     var content = JSON.stringify(req.body)
     var header = JSON.stringify(req.headers)
   } catch (exception) {
-    console.log('TILIAERROR: Body failed to parse with text: ' + req.body)
-    res.status(500)
+    var date = new Date()
+    console.log(date.toISOString + ' {"body": ' + content + ', "header":' + header + '}')
+    return res.status(500)
       .json({
         success: 0,
         status: 'failure',
-        data: exception.message,
-        message: 'JSON Parsing error ' + exception
+        data: null,
+        message: 'The API cannot parse the body content, error: ' + exception.message
       })
   }
 
-  console.log('calling data_handlers handlePostUpdate with ' + content)
-  console.log('handlePostUpdate obtaining all headers as ' + header)
-
+  var date = new Date()
+  console.log(date.toISOString() + ' {"body": ' + content + ', "header":' + header + '}')
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
   var methodSansSchema = methodSubmitted.split('.')[1]
-  console.log('calling handlePostMultiUpdate with method ' + methodSubmitted)
-  if (!methodSubmitted) {
-    err = new Error('No method provided in the POST body')
-    err.tilia = true
-    return next(err)
+
+  if (methodSubmitted.length === 0) {
+    return res.status(500)
+      .json({
+        success: 0,
+        status: 'failure',
+        data: null,
+        message: 'The API requires a valid method submitted in thh body content.'
+      })
+
   }
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
       // returns array of object
-      //  {
-      //     'name': '_units',
-      //     'type': 'character varying',
-      //     'isdefault': false,
-      //     'paramorder': 1
-      // }
-
-      console.log('handlePostMultiRequest data: ' + JSON.stringify(data))
+      //  { 'name': '_units', 'type': 'character varying', 'isdefault': false, 'paramorder': 1 }
+      // console.log('handlePostMultiRequest data: ' + JSON.stringify(data))
 
       var arrOfPgParams = []
 
@@ -90,10 +108,10 @@ function handlePostMultiUpdate (req, res, next) {
       if (data.length > 0) {
         // process array with one collection for each method call
         functionInputs.forEach(function (d, i) {
-          console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))
+          // console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))
           var pgParamArray = []
           data.forEach(function (e, i) {
-            console.log('Input ' + e.name + ' has value ' + d[e.name])
+            // console.log('Input ' + e.name + ' has value ' + d[e.name])
             pgParamArray.push(d[e.name])
           })
           // add array of input values to batch collection
@@ -101,17 +119,17 @@ function handlePostMultiUpdate (req, res, next) {
         })
       }
 
-      console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
+      // console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
       var numOfCalls = arrOfPgParams.length
 
-      console.log('Number of function calls to make: ' + numOfCalls)
+      // console.log('Number of function calls to make: ' + numOfCalls)
 
       requestFactory(methodSubmitted, arrOfPgParams, function (arrOfCalls) {
         db.task(function (t) {
           return t.batch(arrOfCalls)
         })
           .then(function (theResult) {
-            console.log('batch result ' + JSON.stringify(theResult))
+            // console.log('batch result ' + JSON.stringify(theResult))
             // have array of arrays containing object key|newid
             var batchData = []
             theResult.forEach(function (r) {
@@ -142,47 +160,38 @@ function handlePostMultiUpdate (req, res, next) {
     })
 }
 
+/*
 function handlePostUpdate (req, res, next) {
-  console.log('calling data_handlers handlePostUpdate with ' + JSON.stringify(req.body))
-  console.log('handlePostUpdate obtaining all headers as ' + JSON.stringify(req.headers))
-  if (!req.body) {
-    var err = new Error('No POST body found')
-    err.tilia = true
-    return next(err)
+  var errorTypes = [Object.keys(req.body).length === 0, Object.keys(req.body.method).length === 0]
+  if (errorTypes.some(x => true)) {
+    return res.status(500)
+      .json({
+        success: 0,
+        status: 'failure',
+        message: 'POST methods require a body element that includes a valid method.'
+      })
   }
+
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
+
   console.log('calling handlePostUpdate with method ' + methodSubmitted)
-  if (!methodSubmitted) {
-    err = new Error('No method provided in the POST body')
-    err.tilia = true
-    return next(err)
-  }
+
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
       // returns array of object
-      //  {
-      //     'name': '_units',
-      //     'type': 'character varying',
-      //     'isdefault': false,
-      //     'paramorder': 1
-      // }
-
-      console.log('handlePostRequest data: ' + JSON.stringify(data))
-
+      //  { 'name': '_units', 'type': 'character varying', 'isdefault': false, 'paramorder': 1 }
       var pgParamArray = []
-
-      var firstElem
 
       if (data.length > 0) {
         data.forEach(function (p, i) {
-          console.log('Input ' + p.name + ' has value ' + functionInputs[0][p.name])
+          // console.log('Input ' + p.name + ' has value ' + functionInputs[0][p.name])
           pgParamArray.push(functionInputs[0][p.name])
         })
       }
 
-      console.log('params passed are: ', JSON.stringify(pgParamArray))
+      // console.log('params passed are: ', JSON.stringify(pgParamArray))
       db.func(methodSubmitted, pgParamArray)
         .then(function (qryResutls) {
           res.status(200)
@@ -195,12 +204,12 @@ function handlePostUpdate (req, res, next) {
         .catch(function (err) {
           // show message in tilia error handler
           err.tilia = true
-          res.status(500)
+          return res.status(500)
             .json({
               success: 0,
               status: 'failure',
               data: null,
-              message: 'Database error in function call as ' + err
+              message: 'Database error in function call as ' + err.message
             })
         })
     })
@@ -215,17 +224,18 @@ function handlePostUpdate (req, res, next) {
         })
     })
 }
+*/
 
 // Defining the query functions:
 module.exports = {
   allfunctions: function (req, res, next) {
-    console.log('calling allfunctions in data_handlers')
-    console.log(req.query)
+    /* This is returning the block query that is used to list the available functions. */
     var pgFunk = require('../pgfunctions/pgfunction.js')
     pgFunk.allFunctions(req, res, next)
   },
-  handlePostUpdate: handlePostUpdate,
+  // handlePostUpdate: handlePostUpdate,
   handlePostMultiUpdate: handlePostMultiUpdate,
   handleGetUpdate: handleGetUpdate,
-  handleDelete: handleDelete
+  handleDelete: handleDelete,
+  handleLogs: returnLog
 }
