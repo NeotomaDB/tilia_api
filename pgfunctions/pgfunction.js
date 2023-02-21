@@ -33,8 +33,9 @@ function allFunctions (req, res, next) {
   // enters no parameters, or the term 'method' fails to appear in the
   // user query string.
   if (noParam | !method) {
-    var dbFuncs = db.any(queryFunc)
-      .then(function (data) {
+    // We're passing in the raw "/api/" endoint, which requests the set of all functions.
+    db.any(queryFunc)
+      .then(data => {
         return res.status(200)
           .json({
             success: 1,
@@ -43,7 +44,7 @@ function allFunctions (req, res, next) {
             message: 'Retrieved all tables'
           })
       })
-      .catch(function (err) {
+      .catch(err => {
         var date = new Date()
         console.log(date.toISOString() + ': ' + err.message)
         return res.status(500)
@@ -95,12 +96,12 @@ function allFunctions (req, res, next) {
                 return (sqlCall)
               })
               .then(function (sqlStatement) {
-                var dbCall = db.any(sqlStatement)
-                  .then(function (data) {
+                db.any(sqlStatement)
+                  .then(queryres => {
                     res.status(200)
                       .json({
                         status: 'success',
-                        data: data,
+                        data: queryres,
                         message: 'Retrieved all tables'
                       })
                   })
@@ -112,7 +113,6 @@ function allFunctions (req, res, next) {
                         message: 'Error attempting to execute Neotoma Tilia function.'
                       })
                   })
-                return (dbCall)
               })
           } else {
             res.status(500)
