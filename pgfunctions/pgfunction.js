@@ -1,33 +1,36 @@
 // Postgres functions for Tilia:
 const path = require('path')
 
-// get global database object
-var db = require('../database/pgp_db')
-var pgp = db.$config.pgp
-
-pgp.pg.types.setTypeParser(20, function (val) {
-  return parseInt(val)
-})
-
-pgp.pg.types.setTypeParser(1700, function (val) {
-  return parseInt(val)
-})
+var dbtest = require('../database/pgp_db').dbheader
 
 // Helper for linking to external query files:
-function sql (file) {
-  const fullPath = path.join(__dirname, file)
-  return new pgp.QueryFile(fullPath, {
-    minify: true
-  })
-}
-
-// Create a QueryFile globally, once per file:
-const queryFunc = sql('./fun_query.sql')
-const schemFunc = sql('./get_schema.sql')
 
 function allFunctions (req, res, next) {
+
   var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
   var method = Object.keys(req.query).includes('method')
+  var db = dbtest(req)
+  console.log('hey')
+
+  var pgp = db.$config.pgp
+
+  pgp.pg.types.setTypeParser(20, function (val) {
+    return parseInt(val)
+  })
+
+  pgp.pg.types.setTypeParser(1700, function (val) {
+    return parseInt(val)
+  })
+
+  function sql (file, pgp) {
+    const fullPath = path.join(__dirname, file)
+    return new pgp.QueryFile(fullPath, {
+      minify: true
+    })
+  }
+
+  let queryFunc = sql('./fun_query.sql', pgp)
+  let schemFunc = sql('./get_schema.sql', pgp)
 
   // The call to the documentation JSON object occurs if the user either
   // enters no parameters, or the term 'method' fails to appear in the
@@ -66,7 +69,7 @@ function allFunctions (req, res, next) {
     } else {
       next('Error: function must be schema qualified')
     }
-    
+   
     // Here we wind up with the different schema.
     // First validate that the method is in the accepted set for GET calls:
     if (funcSchema !== 'ts' || ['validateusername', 'validatesteward', 'checksteward'].includes(funcName)) {

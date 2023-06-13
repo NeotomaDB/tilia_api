@@ -1,5 +1,4 @@
 const promise = require('bluebird')
-const { json } = require('body-parser')
 
 const options = {
   // Initialization Options
@@ -29,17 +28,39 @@ const options = {
 }
 
 const pgp = require('pg-promise')(options)
-// const monitor = require('pg-monitor')
 
-if (process.env.NODE_ENV === 'development') {
-  var connectpath = '../db_connect.json'
-} else {
-  connectpath = './db_connect.json'
-  console.log(process.env.NODE_ENV)
+/**
+ * Create connection object to open database connection to the required database.
+ * @param {req} An http Request object passed from the calling function.
+ * @returns {Database} A database connection.
+ */
+
+function dbheader (req) {
+  if (process.env.NODE_ENV === 'development') {
+    var connectpath = '../db_connect.json'
+  } else {
+    connectpath = './db_connect.json'
+  }
+
+  let ctStr = require(connectpath)
+  let dest = null
+
+  switch (req.header('dest')) {
+    case 'home':
+      dest = 'home'
+      break
+    case 'holding':
+      dest = 'holding'
+      break
+    case 'dev':
+      dest = 'dev'
+      break
+    default:
+      dest = 'home'
+  }
+  return pgp(ctStr[dest])
 }
 
-const ctStr = require(connectpath)
-
-const db = pgp(ctStr)
-
-module.exports = db
+module.exports = {
+  dbheader: dbheader
+}
