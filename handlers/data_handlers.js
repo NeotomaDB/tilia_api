@@ -1,14 +1,6 @@
 // get global database object
-var db = require('../database/pgp_db')
-var pgp = db.$config.pgp
-const readLastLines = require('read-last-lines');
-
-/*
- 1. validate method name
- 2. validate parameter input type and values
- 3. compose sql request
- 4. call sqlstatement
-*/
+var dbtest = require('../database/pgp_db').dbheader
+const readLastLines = require('read-last-lines')
 
 function handleGetUpdate (req, res, next) {
   // This just redirects to the all function output.
@@ -42,7 +34,8 @@ function returnLog(req, res, next) {
         }))
 }
 
-function requestFactory (theMethod, paramCollection, callback) {
+function requestFactory (theMethod, paramCollection, req, callback) {
+  var db = dbtest(req)
   var taskBatch = []
   paramCollection.forEach(function (c) {
     var theFunction = db.func(theMethod, c)
@@ -54,6 +47,13 @@ function requestFactory (theMethod, paramCollection, callback) {
   callback(taskBatch)
 }
 
+/**
+ * Write data to the database using content from the POST body.
+ * @param {Request} req - The Request object passed from the user.
+ * @param {Respose} res - The Response object to be passed back to the user.
+ * @param {function} next - The callback function.
+ * @returns {any}
+ */
 function handlePostMultiUpdate (req, res, next) {
   if (Object.keys(req.body).length === 0) {
     return res.status(500)
@@ -79,7 +79,7 @@ function handlePostMultiUpdate (req, res, next) {
       })
   }
 
-  var date = new Date()
+  date = new Date()
   console.log(date.toISOString() + ' {"body": ' + content + ', "header":' + header + '}')
   var functionInputs = req.body.data
   var methodSubmitted = req.body.method
@@ -93,7 +93,6 @@ function handlePostMultiUpdate (req, res, next) {
         data: null,
         message: 'The API requires a valid method submitted in thh body content.'
       })
-
   }
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
@@ -124,7 +123,7 @@ function handlePostMultiUpdate (req, res, next) {
 
       // console.log('Number of function calls to make: ' + numOfCalls)
 
-      requestFactory(methodSubmitted, arrOfPgParams, function (arrOfCalls) {
+      requestFactory(methodSubmitted, arrOfPgParams, req, function (arrOfCalls) {
         db.task(function (t) {
           return t.batch(arrOfCalls)
         })
