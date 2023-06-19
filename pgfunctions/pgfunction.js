@@ -5,12 +5,18 @@ var dbtest = require('../database/pgp_db').dbheader
 
 // Helper for linking to external query files:
 
+/**
+ * Return the set of available database functions made visible through the API.
+ * @param {Request} req - A Request object passed from the user through the http protocal
+ * @param {Response} res - A Response object to be passed back to the user.
+ * @param {any} next
+ * @returns {any}
+ */
 function allFunctions (req, res, next) {
-
   var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
   var method = Object.keys(req.query).includes('method')
+
   var db = dbtest(req)
-  console.log('hey')
 
   var pgp = db.$config.pgp
 
@@ -69,7 +75,7 @@ function allFunctions (req, res, next) {
     } else {
       next('Error: function must be schema qualified')
     }
-   
+
     // Here we wind up with the different schema.
     // First validate that the method is in the accepted set for GET calls:
     if (funcSchema !== 'ts' || ['validateusername', 'validatesteward', 'checksteward'].includes(funcName)) {
