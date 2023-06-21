@@ -36,29 +36,22 @@ const pgp = require('pg-promise')(options)
  */
 
 function dbheader (req) {
-  if (process.env.NODE_ENV === 'development') {
-    var connectpath = '../db_connect.json'
-  } else {
-    connectpath = './db_connect.json'
-  }
-
-  let ctStr = require(connectpath)
   let dest = null
 
   switch (req.header('dest')) {
     case 'home':
-      dest = 'home'
+      dest = JSON.parse(process.env.PGDB_NEOTOMA)
       break
     case 'holding':
-      dest = 'holding'
+      dest = JSON.parse(process.env.PGDB_HOLDING)
       break
     case 'dev':
-      dest = 'dev'
+      dest = JSON.parse(process.env.PGDB_DEV)
       break
     default:
-      dest = 'home'
+      dest = JSON.parse(process.env.PGDB_NEOTOMA)
   }
-  return pgp(ctStr[dest])
+  return pgp(dest)
 }
 
 module.exports = {

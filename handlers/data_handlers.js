@@ -25,7 +25,7 @@ function handleDelete (req, res, next) {
 
 function returnLog(req, res, next) {
   readLastLines.read('log.txt', req.params.lines)
-    .then((lines) => 
+    .then((lines) =>
       res.status(200)
         .json({
           success: 1,
