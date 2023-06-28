@@ -24,7 +24,12 @@ function handleDelete (req, res, next) {
 }
 
 function returnLog(req, res, next) {
-  readLastLines.read('log.txt', req.params.lines)
+  if (req.params.lines === undefined) {
+    linefeed = 50
+  } else {
+    linefeed = req.params.lines
+  }
+  readLastLines.read('access.log', linefeed)
     .then((lines) =>
       res.status(200)
         .json({
