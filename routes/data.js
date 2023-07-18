@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
 router.get('/api/update', handlers.handleGetUpdate)
 
 router.get('/api/logs/:lines', handlers.handleLogs)
+router.get('/api/logs', handlers.handleLogs)
 
 // Populates the dojo API.  Returns all API endpoints/Postgres functions.
 router.get('/api', handlers.allfunctions)

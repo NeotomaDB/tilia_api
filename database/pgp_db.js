@@ -38,6 +38,14 @@ const pgp = require('pg-promise')(options)
 function dbheader (req) {
   let dest = null
 
+  var out = {
+    'host': process.env.RDS_HOSTNAME,
+    'user': process.env.RDS_USERNAME,
+    'database': process.env.RDS_DATABASE,
+    'password': process.env.RDS_PASSWORD,
+    'port': process.env.RDS_PORT
+  }
+
   switch (req.header('dest')) {
     case 'home':
       dest = JSON.parse(process.env.PGDB_NEOTOMA)
@@ -51,7 +59,7 @@ function dbheader (req) {
     default:
       dest = JSON.parse(process.env.PGDB_NEOTOMA)
   }
-  return pgp(dest)
+  return pgp(out)
 }
 
 module.exports = {
