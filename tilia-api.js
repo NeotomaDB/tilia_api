@@ -1,23 +1,20 @@
-var express = require('express')
-var path = require('path')
-var favicon = require('serve-favicon')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
+'use strict'
 
-var morgan = require('morgan')
-var fs = require('fs')
-var app = express()
+const express = require('express')
+const path = require('path')
+const favicon = require('serve-favicon')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const fs = require('fs')
 const dotenv = require('dotenv')
 const util = require('node:util')
+const cors = require('cors')
 
+const app = express()
 dotenv.config()
 
-var cors = require('cors')
-//     var passport = require('passport')
-// var LocalStrategy = require('passport-local').Strategy;
-// var auth = require('./auth/auth.js')
-
-// create a write stream (in append mode)
+// create a write stream (in append mode) for the log files.
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
   { flags: 'a',
     interval: '1d', // rotate daily
