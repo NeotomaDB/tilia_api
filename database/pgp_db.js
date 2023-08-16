@@ -36,29 +36,15 @@ const pgp = require('pg-promise')(options)
  */
 
 function dbheader (req) {
-  let dest = null
-
   var out = {
     'host': process.env.RDS_HOSTNAME,
     'user': process.env.RDS_USERNAME,
     'database': process.env.RDS_DATABASE,
     'password': process.env.RDS_PASSWORD,
-    'port': process.env.RDS_PORT
+    'port': process.env.RDS_PORT,
+    'ssl': true
   }
-
-  switch (req.header('dest')) {
-    case 'home':
-      dest = JSON.parse(process.env.PGDB_NEOTOMA)
-      break
-    case 'holding':
-      dest = JSON.parse(process.env.PGDB_HOLDING)
-      break
-    case 'dev':
-      dest = JSON.parse(process.env.PGDB_DEV)
-      break
-    default:
-      dest = JSON.parse(process.env.PGDB_NEOTOMA)
-  }
+console.log(out)
   return pgp(out)
 }
 
