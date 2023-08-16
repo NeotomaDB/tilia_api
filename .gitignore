@@ -76,3 +76,5 @@ typings/
 .next
 
 package-lock.json
+
+log.txt
