@@ -1,5 +1,8 @@
 'use strict'
 
+const compression = require('compression')
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit')
 const express = require('express')
 const path = require('path')
 const favicon = require('serve-favicon')
@@ -29,8 +32,21 @@ console.log = function () {
   logStdout.write(util.format.apply(null, arguments) + '\n')
 }
 
+const limiter = rateLimit({
+  windowMs: 2 * 60 * 1000, // 2 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+})
+
 // setup the logger
 app.enable('trust proxy')
+app.disable('x-powered-by')
+app.use(helmet())
+
+// Apply the rate limiting middleware to all requests
+app.use(limiter)
+app.use(compression())
 app.use(morgan(':date[iso]\t:remote-addr\t:method\t:url\t:status\t:res[content-length]\t:response-time[0]\t:user-agent', { stream: accessLogStream }))
 
 // uncomment after placing your favicon in /public
@@ -70,6 +86,17 @@ app.use('/', data)
 
 app.all('*', function (req, res) {
   res.redirect('/api')
+})
+
+// custom 404
+app.use((req, res, next) => {
+  res.status(404).send("Sorry can't find that!")
+})
+
+// custom error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
 })
 
 // in production, port is 3001 and server started in script 'www'

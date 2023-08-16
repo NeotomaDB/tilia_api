@@ -46,7 +46,7 @@ function dbheader (req) {
     'ssl': true,
     'query_timeout': 3000
   }
-console.log(out)
+  console.log(out)
   return pgp(out)
 }
 
