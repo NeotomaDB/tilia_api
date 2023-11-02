@@ -1,9 +1,16 @@
 const path = require('path')
 var assert = require('assert')
-const { result } = require('../database/pgp_db')
-var db = require('../database/pgp_db')
+var dbtest = require('../database/pgp_db').dbheader
+const promise = require('bluebird')
+
+// Initialization Options
+const options = {
+  promiseLib: promise,
+  capSQL: true
+}
+const pgp = require('pg-promise')(options)
+
 const { geojsonToWKT, wktToGeoJSON } = require("@terraformer/wkt")
-var pgp = db.$config.pgp
 
 // Goes through an object tree and clears out NULL elements (not sure this is the best).
 function removeEmpty (obj) {
@@ -38,7 +45,8 @@ function commaSep (x) {
 
 /* Takes integer values and passes them into a query to the database.
    This is used when we need to pre-process values for an API call. */
-function checkObject (res, query, value, outobj) {
+function checkObject (res, req, query, value, outobj) {
+  var db = dbtest(req)
   if (value) {
     if (!value.every(Number.isInteger)) {
       value = db.any(query, outobj)

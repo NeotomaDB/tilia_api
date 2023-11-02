@@ -11,6 +11,7 @@
     "dev_www": "NODE_ENV=development ./bin/www"
   },
   "dependencies": {
+    "@terraformer/wkt": "^2.2.0",
     "bluebird": "^3.7.2",
     "body-parser": "^1.20.2",
     "child_process": "^1.0.2",
