@@ -1,9 +1,9 @@
 // Postgres functions for Tilia:
 const path = require('path')
 
-var dbtest = require('../database/pgp_db').dbheader
+const { sql, getparam } = require('../src/neotomaapi.js')
 
-// Helper for linking to external query files:
+var dbtest = require('../database/pgp_db').dbheader
 
 /**
  * Return the set of available database functions made visible through the API.
@@ -13,8 +13,23 @@ var dbtest = require('../database/pgp_db').dbheader
  * @returns {any}
  */
 function allFunctions (req, res, next) {
-  var noParam = Object.keys(req.query).length === 0 && req.query.constructor === Object
-  var method = Object.keys(req.query).includes('method')
+  let paramgrab = getparam(req)
+
+  if (!paramgrab.success) {
+    res.status(500)
+      .json({
+        status: 'failure',
+        data: null,
+        message: paramgrab.message
+      })
+  } else {
+    var resultset = paramgrab.data
+    console.log(resultset)
+    // Get the input parameters:
+    var outobj = resultset
+  }
+  console.log(outobj)
+  var noParam = Object.keys(outobj).length === 0
 
   var db = dbtest(req)
 
@@ -28,20 +43,13 @@ function allFunctions (req, res, next) {
     return parseInt(val)
   })
 
-  function sql (file, pgp) {
-    const fullPath = path.join(__dirname, file)
-    return new pgp.QueryFile(fullPath, {
-      minify: true
-    })
-  }
-
-  let queryFunc = sql('./fun_query.sql', pgp)
-  let schemFunc = sql('./get_schema.sql', pgp)
+  let queryFunc = sql('../pgfunctions/fun_query.sql', pgp)
+  let schemFunc = sql('../pgfunctions/get_schema.sql', pgp)
 
   // The call to the documentation JSON object occurs if the user either
   // enters no parameters, or the term 'method' fails to appear in the
   // user query string.
-  if (noParam | !method) {
+  if (noParam | !outobj.method) {
     // We're passing in the raw "/api/" endoint, which requests the set of all functions.
     db.any(queryFunc)
       .then(data => {
@@ -65,47 +73,34 @@ function allFunctions (req, res, next) {
           })
       })
   } else {
-    var allParams = req.query
-    var sqlMethod = allParams.method
-
-    if (sqlMethod) {
-      var arrFuncNameParts = sqlMethod.split('.')
-      var funcSchema = arrFuncNameParts[0]
-      var funcName = arrFuncNameParts[1]
-    } else {
-      next('Error: function must be schema qualified')
-    }
+    var arrFuncNameParts = outobj.method.split('.')
+    var funcSchema = arrFuncNameParts[0]
+    var funcName = arrFuncNameParts[1]
 
     // Here we wind up with the different schema.
     // First validate that the method is in the accepted set for GET calls:
     if (funcSchema !== 'ts' || ['validateusername', 'validatesteward', 'checksteward'].includes(funcName)) {
       var schema = db.any(queryFunc)
         .then(function (data) {
-          // Check that sqlMethod is in the set of data[name]:
+          // Check that outobj.method is in the set of data[name]:
           var methods = data.map(x => x.name)
           return (methods)
         })
         .then(function (data) {
-          if (data.includes(sqlMethod)) {
+          if (data.includes(outobj.method)) {
             // If the function called by the user is in the set of existing Postgres functions:
 
             db.any(schemFunc, [funcName])
               .then(function (data) {
-                var sqlCall = 'SELECT * FROM ' + funcSchema + '.' + funcName + '('
-
-                for (var i = 1; i < Object.keys(allParams).length; i++) {
-                  sqlCall = sqlCall + Object.keys(allParams)[i] + ' := ' + allParams[Object.keys(allParams)[i]]
-
-                  if (i < Object.keys(allParams).length - 1) {
-                    sqlCall = sqlCall + ', '
-                  }
+                dbFunction = funcSchema + '.' + funcName
+                const arguments = data[0]['pg_get_function_arguments'].split(',').map(x => x.trim().split(' ')[0])
+                var QueryParams = {}
+                for (a in arguments) {
+                  QueryParams[arguments[a]] = outobj[arguments[a]]
                 }
-
-                sqlCall = sqlCall + ')'
-                return (sqlCall)
-              })
-              .then(function (sqlStatement) {
-                db.any(sqlStatement)
+                console.log(QueryParams)
+                console.log(pgp.helpers.sets(QueryParams))
+                db.func(dbFunction, QueryParams)
                   .then(queryres => {
                     res.status(200)
                       .json({
