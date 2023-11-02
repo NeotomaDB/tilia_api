@@ -23,9 +23,9 @@ function handleDelete (req, res, next) {
 
 }
 
-function returnLog(req, res, next) {
+function returnLog (req, res, next) {
   if (req.params.lines === undefined) {
-    linefeed = 50
+    var linefeed = 50
   } else {
     linefeed = req.params.lines
   }
@@ -60,6 +60,7 @@ function requestFactory (theMethod, paramCollection, req, callback) {
  * @returns {any}
  */
 function handlePostMultiUpdate (req, res, next) {
+  var db = dbtest(req)
   if (Object.keys(req.body).length === 0) {
     return res.status(500)
       .json({
@@ -129,7 +130,8 @@ function handlePostMultiUpdate (req, res, next) {
       // console.log('Number of function calls to make: ' + numOfCalls)
 
       requestFactory(methodSubmitted, arrOfPgParams, req, function (arrOfCalls) {
-        db.task(function (t) {
+        var dbb = dbtest(req)
+        dbb.task(function (t) {
           return t.batch(arrOfCalls)
         })
           .then(function (theResult) {
@@ -162,6 +164,7 @@ function handlePostMultiUpdate (req, res, next) {
           })
       })
     })
+    .finally(db.end)
 }
 
 // Defining the query functions:
