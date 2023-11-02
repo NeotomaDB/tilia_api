@@ -95,11 +95,17 @@ function allFunctions (req, res, next) {
                 dbFunction = funcSchema + '.' + funcName
                 const arguments = data[0]['pg_get_function_arguments'].split(',').map(x => x.trim().split(' ')[0])
                 var QueryParams = {}
-                for (a in arguments) {
-                  QueryParams[arguments[a]] = outobj[arguments[a]]
+                if (arguments[0] == '') {
+                  QueryParams = {}
+                } else {
+                  for (a in arguments) {
+                    QueryParams[arguments[a]] = outobj[arguments[a]]
+                  }
                 }
-                console.log(QueryParams)
+                
+                console.log(arguments)
                 console.log(pgp.helpers.sets(QueryParams))
+
                 db.func(dbFunction, QueryParams)
                   .then(queryres => {
                     res.status(200)
