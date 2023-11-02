@@ -16,7 +16,7 @@ const options = {
       messageout.query = e.query
       messageout.db = { client: e.client.user, database: e.client.database, host: e.client.host }
     }
-    console.log(date.toISOString() + ' ' + JSON.stringify(messageout))
+    console.log(date.toISOString() + '\t' + JSON.stringify(messageout) + '\n')
   },
   error (err, e) {
     var date = new Date()
@@ -46,10 +46,10 @@ function dbheader (req) {
     'ssl': true,
     'query_timeout': 3000
   }
-  console.log(out)
   return pgp(out)
 }
 
 module.exports = {
-  dbheader: dbheader
+  dbheader: dbheader,
+  dboptions: options
 }
