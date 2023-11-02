@@ -1,6 +1,6 @@
 SELECT '**' as description,       
        nspname || '.' || proname as  name,  
-       CONCAT('<a href="?method=', proname, '&action=doc" target="_BLANK">Details</a>') AS detailsurl,
+       CONCAT('<a href="?method=', nspname || '.' || proname, '&action=doc" target="_BLANK">Details</a>') AS detailsurl,
        json_agg(
        		json_build_object(
        			'name', 
