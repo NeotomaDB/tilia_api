@@ -33,8 +33,8 @@ console.log = function () {
 }
 
 const limiter = rateLimit({
-  windowMs: 2 * 60 * 1000, // 2 minutes
-  max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  windowMs: process.env.RATE_WINDOW || 2 * 60 * 1000, // 2 minutes
+  max: process.env.MAX_RATE || 1000, // Limit each IP to 100 requests per `window` (here, per 2 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
 })
