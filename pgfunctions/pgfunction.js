@@ -92,18 +92,25 @@ function allFunctions (req, res, next) {
 
             db.any(schemFunc, [funcName])
               .then(function (data) {
-                dbFunction = funcSchema + '.' + funcName
-                const arguments = data[0]['pg_get_function_arguments'].split(',').map(x => x.trim().split(' ')[0])
+                let dbFunction = funcSchema + '.' + funcName
+                const QueryArgs = data[0]['pg_get_function_arguments'].split(',').map(x => x.trim().split(' ')[0])
                 var QueryParams = {}
-                if (arguments[0] == '') {
+                if (QueryArgs[0] === '') {
                   QueryParams = {}
                 } else {
-                  for (a in arguments) {
-                    QueryParams[arguments[a]] = outobj[arguments[a]]
+                  for (let a in QueryArgs) {
+                    console.log(typeof outobj[QueryArgs[a]])
+                    if (typeof outobj[QueryArgs[a]] === 'string' || outobj[QueryArgs[a]] instanceof String) {
+                      var replaced = outobj[QueryArgs[a]]
+                      replaced = replaced.replace(/^"(.*)"$/g, '$1')
+                      QueryParams[QueryArgs[a]] = replaced.replace(/^'(.*)'$/g, '$1')
+                    } else {
+                      QueryParams[QueryArgs[a]] = outobj[QueryArgs[a]]
+                    }
                   }
                 }
-                
-                console.log(arguments)
+
+                console.log(QueryParams)
                 console.log(pgp.helpers.sets(QueryParams))
 
                 db.func(dbFunction, QueryParams)

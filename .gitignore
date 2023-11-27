@@ -78,3 +78,5 @@ typings/
 package-lock.json
 
 log.txt
+
+tests/message.txt
