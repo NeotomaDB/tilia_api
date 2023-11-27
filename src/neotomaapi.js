@@ -160,8 +160,8 @@ function getparam (req, name) {
   result = {
     success: true,
     message: null,
-    data: Object.assign(output.body, output.params, output.query) }
-
+    data: Object.assign(output.body, output.params, output.query) 
+  }
   return result
 }
 
