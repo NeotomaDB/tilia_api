@@ -1,10 +1,16 @@
 // Capture all the endpoints and then test them with the provided parameters.
-const fs = require('fs');
+const fs = require('fs')
 
 const url = 'http://tiliaprivaterds-env.eba-jy8cfsip.us-east-2.elasticbeanstalk.com/api'
 
-async function testAPI(url) {
-  const output = await fetch(url, { 'method': 'GET' })
+async function testAPI (url, params) {
+  await fetch(url,
+    { 'method': 'POST',
+      'headers': {
+        'Content-Type': 'application/json'
+      },
+      'body': JSON.stringify(params)
+    })
     .then((response) => {
       if (!response.status === 200) {
         setTimeout(() => 'Waiting', 2000)
@@ -12,26 +18,35 @@ async function testAPI(url) {
       return response.json()
     })
     .then((data) => {
-      var response = { 'url': url, 'response': data }
-      fs.appendFile('message.txt', JSON.stringify(response), function (err) {
+      let stringy = JSON.stringify(data)
+      if (stringy.length > 1000) {
+        data = stringy.slice(1, 100) + '...' + JSON.stringify(data).slice(-100)
+      }
+      var response = { 'url': url, 'params': params, 'response': stringy }
+      fs.appendFile('message.jsonl', JSON.stringify(response) + '\n', function (err) {
         if (err) throw err
         console.log('Saved!')
       })
     })
-    .catch((err) => console.log(err))
+    .catch((err) => {
+      var response = { 'url': url, 'params': params, 'error': err }
+      fs.appendFile('message.jsonl', JSON.stringify(response) + '\n', function (err) {
+        if (err) throw err
+        console.log('Saved!')
+      })
+    })
 }
 
 fetch(url)
   .then((response) => response.json())
   .then((data) => {
     const rawMethods = data.data.map(x => [x.name, x.params])
-    var typeArray = []
     var testURL = []
     for (var i = 0; i < rawMethods.length; i++) {
-      let method = rawMethods[i][0]
       let params = rawMethods[i][1]
 
-      var queryString = ''
+      var queryString = { method: rawMethods[i][0] }
+
       for (var j = 0; j < params.length; j++) {
         if (params[j]['name']) {
           if (params[j]['type'].match('integer[]')) {
@@ -45,14 +60,11 @@ fetch(url)
           } else if (params[j]['type'].match('bool')) {
             params[j]['type'] = 'true'
           }
-          queryString = queryString + '&' + params[j]['name'] + '=' + params[j]['type']
+          queryString[params[j]['name']] = params[j]['type']
         }
       }
-
-      var newURL = url + '?method=' + method + queryString
-
-      testURL.push(newURL)
+      testURL.push({ url: url, params: queryString })
     }
     return testURL
   })
-  .then((output) => output.map((url) => testAPI(url)))
+  .then((output) => output.map((url) => testAPI(url['url'], url['params'])))
