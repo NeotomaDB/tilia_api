@@ -14,7 +14,7 @@ const options = {
       messageout.query = 'Match function schema'
     } else {
       messageout.query = e.query
-      messageout.db = { client: e.client.user, database: e.client.database, host: e.client.host }
+      // messageout.db = { client: e.client.user, database: e.client.database, host: e.client.host }
     }
     console.log(date.toISOString() + '\t' + JSON.stringify(messageout) + '\n')
   },
@@ -23,7 +23,7 @@ const options = {
     // Exclude the big chunky query:
     console.log(JSON.stringify(err))
     var messageout = { 'error': JSON.stringify(err), 'query': e.query }
-    messageout.db = { 'client': e.client.user, 'database': e.client.database, 'host': e.client.host }
+    // messageout.db = { 'client': e.client.user, 'database': e.client.database, 'host': e.client.host }
     console.log(date.toISOString() + ' ' + JSON.stringify(messageout))
   }
 }
