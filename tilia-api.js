@@ -1,14 +1,11 @@
-'use strict'
-
 const compression = require('compression')
-const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const express = require('express')
 const path = require('path')
 const favicon = require('serve-favicon')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-const morgan = require('morgan')
+// const morgan = require('morgan')
 const fs = require('fs')
 const dotenv = require('dotenv')
 const util = require('node:util')
@@ -42,12 +39,11 @@ const limiter = rateLimit({
 // setup the logger -- Commenting this, so that I can try figuring out why the app isn't working.
 // app.enable('trust proxy')
 // app.disable('x-powered-by')
-// app.use(helmet())
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter)
 app.use(compression())
-app.use(morgan(':date[iso]\t:remote-addr\t:method\t:url\t:status\t:res[content-length]\t:response-time[0]\t:user-agent', { stream: accessLogStream }))
+// app.use(morgan(':date[iso]\t:remote-addr\t:method\t:url\t:status\t:res[content-length]\t:response-time[0]\t:user-agent', { stream: accessLogStream }))
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
