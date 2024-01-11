@@ -39,10 +39,10 @@ const limiter = rateLimit({
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
 })
 
-// setup the logger
-app.enable('trust proxy')
-app.disable('x-powered-by')
-app.use(helmet())
+// setup the logger -- Commenting this, so that I can try figuring out why the app isn't working.
+// app.enable('trust proxy')
+// app.disable('x-powered-by')
+// app.use(helmet())
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter)
