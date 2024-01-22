@@ -1,5 +1,4 @@
 // get global database object
-var dbtest = require('../database/pgp_db').dbheader
 const readLastLines = require('read-last-lines')
 
 function handleGetUpdate (req, res, next) {
@@ -111,6 +110,7 @@ function handlePostMultiUpdate (req, res, next) {
 
       // process key|value for parameter inputs
       if (data.length > 0) {
+        console.log(functionInputs)
         // process array with one collection for each method call
         functionInputs.forEach(function (d, i) {
           // console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))

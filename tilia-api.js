@@ -5,7 +5,7 @@ const path = require('path')
 const favicon = require('serve-favicon')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-// const morgan = require('morgan')
+const dbtest = require('./database/pgp_db').dbheader;
 const fs = require('fs')
 const dotenv = require('dotenv')
 const util = require('node:util')
@@ -49,6 +49,7 @@ app.use(compression())
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
 app.use(cors())
+app.locals.db = dbtest();
 
 // We get unintentional errors from Tilia when poorly formatted JSON is passed.
 // This helps us figure out what's going on:

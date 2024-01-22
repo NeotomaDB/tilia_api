@@ -3,8 +3,6 @@ const path = require('path')
 
 const { sql, getparam } = require('../src/neotomaapi.js')
 
-var dbtest = require('../database/pgp_db').dbheader
-
 /**
  * Return the set of available database functions made visible through the API.
  * @param {Request} req - A Request object passed from the user through the http protocal
@@ -13,6 +11,7 @@ var dbtest = require('../database/pgp_db').dbheader
  * @returns {any}
  */
 function allFunctions (req, res, next) {
+  let db = req.app.locals.db
   let paramgrab = getparam(req)
 
   if (!paramgrab.success) {
@@ -30,8 +29,6 @@ function allFunctions (req, res, next) {
   }
   console.log(outobj)
   var noParam = Object.keys(outobj).length === 0
-
-  var db = dbtest(req)
 
   var pgp = db.$config.pgp
 

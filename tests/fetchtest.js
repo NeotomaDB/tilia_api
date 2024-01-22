@@ -1,36 +1,39 @@
 // Capture all the endpoints and then test them with the provided parameters.
 const fs = require('fs')
 
-const url = 'http://tiliaprivaterds-env.eba-jy8cfsip.us-east-2.elasticbeanstalk.com/api'
+const url = 'http://localhost:3006/api'
 
 async function testAPI (url, params) {
-  await fetch(url,
+  const response = await fetch(url,
     { 'method': 'POST',
       'headers': {
         'Content-Type': 'application/json'
       },
       'body': JSON.stringify(params)
     })
-    .then((response) => {
-      if (!response.status === 200) {
-        setTimeout(() => 'Waiting', 2000)
-      }
-      return response.json()
-    })
+    const data = await response.json()
+
     .then((data) => {
       let stringy = JSON.stringify(data)
       if (stringy.length > 1000) {
         data = stringy.slice(1, 100) + '...' + JSON.stringify(data).slice(-100)
       }
       var response = { 'url': url, 'params': params, 'response': stringy }
-      fs.appendFile('message.jsonl', JSON.stringify(response) + '\n', function (err) {
-        if (err) throw err
-        console.log('Saved!')
-      })
+      if (stringy['response']['status'] === 'success') {
+        fs.appendFile('message.jsonl', JSON.stringify(response) + '\n', function (err) {
+          if (err) throw err
+          console.log('Saved!')
+        })
+      } else {
+        fs.appendFile('err_message.jsonl', JSON.stringify(response) + '\n', function (err) {
+          if (err) throw err
+          console.log('Saved!')
+        })
+      }
     })
     .catch((err) => {
-      var response = { 'url': url, 'params': params, 'error': err }
-      fs.appendFile('message.jsonl', JSON.stringify(response) + '\n', function (err) {
+      var response = { 'url': url, 'params': params, 'error': err.message }
+      fs.appendFile('err_message.jsonl', JSON.stringify(response) + '\n', function (err) {
         if (err) throw err
         console.log('Saved!')
       })
