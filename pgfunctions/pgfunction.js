@@ -1,6 +1,4 @@
 // Postgres functions for Tilia:
-const path = require('path')
-
 const { sql, getparam } = require('../src/neotomaapi.js')
 
 /**
@@ -23,11 +21,9 @@ function allFunctions (req, res, next) {
       })
   } else {
     var resultset = paramgrab.data
-    console.log(resultset)
     // Get the input parameters:
     var outobj = resultset
   }
-  console.log(outobj)
   var noParam = Object.keys(outobj).length === 0
 
   var pgp = db.$config.pgp
@@ -138,12 +134,21 @@ function allFunctions (req, res, next) {
           }
         })
     } else {
-      res.status(500)
-        .json({
-          status: 'failure',
-          data: null,
-          message: 'You cannot call a ts method through a GET call.'
-        })
+      if (req.action === 'GET') {
+        res.status(500)
+          .json({
+            status: 'failure',
+            data: null,
+            message: 'You cannot call a ts method through a GET call.'
+          })
+      } else {
+        res.status(500)
+          .json({
+            status: 'failure',
+            data: null,
+            message: 'This function is not in the valid set of functions.'
+          })
+      }
     }
   }
   return (schema)

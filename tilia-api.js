@@ -10,6 +10,7 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const util = require('node:util')
 const cors = require('cors')
+const json5 = require('json5')
 
 const app = express()
 dotenv.config()
@@ -54,8 +55,11 @@ app.locals.db = dbtest();
 // We get unintentional errors from Tilia when poorly formatted JSON is passed.
 // This helps us figure out what's going on:
 app.use((req, res, next) => {
-  bodyParser.json()(req, res, err => {
-    if (err) {
+  express.text({ type: '*/*', 'strict': false, 'inflate': true })(req, res, err => {
+    try {
+      let test = json5.parse(req.body)
+      req.body = test
+    } catch {
       var date = new Date()
       console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": "' + err.body.replace(/(\r\n|\n|\r)/gm, ' ') + '"}')
       return res.status(400)
