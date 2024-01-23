@@ -57,8 +57,10 @@ app.locals.db = dbtest();
 app.use((req, res, next) => {
   express.text({ type: '*/*', 'strict': false, 'inflate': true })(req, res, err => {
     try {
-      let test = json5.parse(req.body)
-      req.body = test
+      if(req._body){
+        let test = json5.parse(req.body)
+        req.body = test
+      }
     } catch {
       var date = new Date()
       console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": "' + err.body.replace(/(\r\n|\n|\r)/gm, ' ') + '"}')
