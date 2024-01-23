@@ -1,6 +1,5 @@
 const path = require('path')
 var assert = require('assert')
-var dbtest = require('../database/pgp_db').dbheader
 const promise = require('bluebird')
 
 // Initialization Options
@@ -46,7 +45,7 @@ function commaSep (x) {
 /* Takes integer values and passes them into a query to the database.
    This is used when we need to pre-process values for an API call. */
 function checkObject (res, req, query, value, outobj) {
-  var db = dbtest(req)
+  let db = req.app.locals.db
   if (value) {
     if (!value.every(Number.isInteger)) {
       value = db.any(query, outobj)
