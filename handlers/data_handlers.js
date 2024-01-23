@@ -39,7 +39,7 @@ function returnLog (req, res, next) {
 }
 
 function requestFactory (theMethod, paramCollection, req, callback) {
-  var db = dbtest(req)
+  var db = req.app.locals.db
   var taskBatch = []
   paramCollection.forEach(function (c) {
     var theFunction = db.func(theMethod, c)
