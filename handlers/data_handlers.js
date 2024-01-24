@@ -59,7 +59,7 @@ function requestFactory (theMethod, paramCollection, req, callback) {
  * @returns {any}
  */
 function handlePostMultiUpdate (req, res, next) {
-  var db = dbtest(req)
+  var db = req.app.locals.db
   if (Object.keys(req.body).length === 0) {
     return res.status(500)
       .json({
@@ -130,7 +130,7 @@ function handlePostMultiUpdate (req, res, next) {
       // console.log('Number of function calls to make: ' + numOfCalls)
 
       requestFactory(methodSubmitted, arrOfPgParams, req, function (arrOfCalls) {
-        var dbb = dbtest(req)
+        var dbb = req.app.locals.db
         dbb.task(function (t) {
           return t.batch(arrOfCalls)
         })
