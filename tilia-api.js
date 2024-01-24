@@ -63,14 +63,19 @@ app.use((req, res, next) => {
       }
     } catch {
       var date = new Date()
-      console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": "' + err.body.replace(/(\r\n|\n|\r)/gm, ' ') + '"}')
-      return res.status(400)
-        .json({
-          success: 0,
-          status: 'failure',
-          data: err.body.replace(/(\r\n|\n|\r)/gm, ' '),
-          message: 'The JSON body will not properly parse.'
-        })
+      if(req._body){
+        console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": "' + req.body.replace(/(\r\n|\n|\r)/gm, ' ') + '"}')
+        return res.status(400)
+          .json({
+            success: 0,
+            status: 'failure',
+            data: req.body.replace(/(\r\n|\n|\r)/gm, ' '),
+            message: 'The JSON body will not properly parse.'
+          })
+      }
+      else {
+        console.log(date.toISOString() + ' {"error": "No JSON body"}')
+      }
     }
     next()
   })
