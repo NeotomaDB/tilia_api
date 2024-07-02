@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const dbtest = require('./database/pgp_db').dbheader;
 const fs = require('fs')
+const helmet = require('helmet')
 const dotenv = require('dotenv')
 const util = require('node:util')
 const cors = require('cors')
@@ -32,19 +33,17 @@ console.log = function () {
 
 const limiter = rateLimit({
   windowMs: process.env.RATE_WINDOW || 2 * 60 * 1000, // 2 minutes
-  max: process.env.MAX_RATE || 1000, // Limit each IP to 100 requests per `window` (here, per 2 minutes)
+  max: process.env.MAX_RATE || 10000, // Limit each IP to 100 requests per `window` (here, per 2 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
 })
 
-// setup the logger -- Commenting this, so that I can try figuring out why the app isn't working.
-// app.enable('trust proxy')
-// app.disable('x-powered-by')
+app.use(helmet())
+app.disable('x-powered-by')
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter)
 app.use(compression())
-// app.use(morgan(':date[iso]\t:remote-addr\t:method\t:url\t:status\t:res[content-length]\t:response-time[0]\t:user-agent', { stream: accessLogStream }))
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
@@ -98,7 +97,7 @@ app.all('*', function (req, res) {
 
 // custom 404
 app.use((req, res, next) => {
-  res.status(404).send("Sorry can't find that!")
+  res.status(404).send("Ain't nobody here but us chickens!")
 })
 
 // custom error handler

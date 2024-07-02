@@ -11,7 +11,7 @@ async function testAPI (url, params) {
       },
       'body': JSON.stringify(params)
     })
-    const data = await response.json()
+  const data = await response.json()
 
     .then((data) => {
       let stringy = JSON.stringify(data)
@@ -43,7 +43,8 @@ async function testAPI (url, params) {
 fetch(url)
   .then((response) => response.json())
   .then((data) => {
-    const rawMethods = data.data.map(x => [x.name, x.params])
+    console.log(data)
+    /* const rawMethods = data.data.map(x => [x.name, x.params])
     var testURL = []
     for (var i = 0; i < rawMethods.length; i++) {
       let params = rawMethods[i][1]
@@ -68,6 +69,6 @@ fetch(url)
       }
       testURL.push({ url: url, params: queryString })
     }
-    return testURL
+    return testURL*/
   })
-  .then((output) => output.map((url) => testAPI(url['url'], url['params'])))
+  .then((output) => { console.log(output) }) //output.map((url) => testAPI(url['url'], url['params'])))

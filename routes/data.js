@@ -14,9 +14,11 @@ router.get('/', (req, res) => {
   res.redirect('/api')
 })
 
-router.get('/healthwatch', function(req, res, next) {
-  res.status(200).json({'response': 'Okay'});
-});
+router.get('/healthwatch', function (req, res, next) {
+  res.status(200).json(
+    { 'response': 'Okay' }
+  )
+})
 
 // Runs, but pulls only from URL query parameters. (Check if this is being used)
 router.get('/api/update', handlers.handleGetUpdate)
