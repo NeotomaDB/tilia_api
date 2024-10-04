@@ -32,6 +32,7 @@ router.post('/api', handlers.allfunctions)
 
 // Handles single and batch requests where parameters are passed in the body.
 router.post('/api/update/write', handlers.handlePostMultiUpdate)
+router.post('/apiupdate/write', handlers.handlePostMultiUpdate)
 
 // Placeholder, not actually really used.
 router.delete('/api/delete', handlers.handleDelete)
