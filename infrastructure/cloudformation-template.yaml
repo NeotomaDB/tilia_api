@@ -4,7 +4,7 @@ Description: 'Neotoma API infrastructure'
 Parameters:
   Environment:
     Type: String
-    AllowedValues: [dev, prod]
+    AllowedValues: [tdev, tprod]
     Description: Environment name
   
   HostedZoneId:
