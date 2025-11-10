@@ -1,4 +1,4 @@
-name: Deploy Neotoma Tilia API
+name: Deploy the Neotoma Tilia API
 
 on:
   push:
