@@ -2,7 +2,7 @@ version: "3.8"
 services:
   api:
     build:
-      context: https://github.com/NeotomaDB/api_nodetest.git#feature/dockercompose
+      context: https://github.com/NeotomaDB/tilia_api.git#feature/dockercompose
       dockerfile: Dockerfile
     container_name: node-express-api
     restart: unless-stopped
