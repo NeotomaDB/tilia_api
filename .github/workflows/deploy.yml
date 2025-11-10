@@ -19,12 +19,12 @@ jobs:
       - name: Set environment based on branch
         run: |
           if [[ ${{ github.ref }} == 'refs/heads/production' ]]; then
-            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
             echo "STACK_NAME=neotilia-prod" >> $GITHUB_ENV
             echo "RDSDB=neotoma" >> $GITHUB_ENV
             echo "ENDPOINT=tilia.neotomadb.org" >> $GITHUB_ENV
           else
-            echo "ENVIRONMENT=develop" >> $GITHUB_ENV
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
             echo "STACK_NAME=neotilia-dev" >> $GITHUB_ENV
             echo "RDSDB=neotomatank" >> $GITHUB_ENV
             echo "ENDPOINT=tilia-dev.neotomadb.org" >> $GITHUB_ENV
