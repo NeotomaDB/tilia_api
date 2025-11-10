@@ -41,6 +41,8 @@ console.log = function () {
 //app.use(helmet())
 //app.disable('x-powered-by')
 
+const healthwatch = require('./routes/healthwatch');
+
 // Apply the rate limiting middleware to all requests
 // app.use(limiter)
 app.use(compression())
@@ -48,7 +50,7 @@ app.use(compression())
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
-app.use(cors())
+//app.use(cors())
 app.locals.db = dbtest();
 
 // We get unintentional errors from Tilia when poorly formatted JSON is passed.
@@ -90,6 +92,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 var data = require('./routes/data.js')
 
 app.use('/', data)
+app.use('/healthcheck/', healthwatch);
 
 app.all('*', function (req, res) {
   res.redirect('/api')

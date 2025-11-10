@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Neotoma API infrastructure'
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, prod]
+    Description: Environment name
+  
+  HostedZoneId:
+    Type: String
+    Description: Route 53 Hosted Zone ID
+    Default: "Z06678132YXCZ3LP39MIP"
+  
+  DomainName:
+    Type: String
+    Description: Domain name for the API
+    Default: "api-dev.neotoma.org"
+
+  ImageUri:
+    Type: String
+    Description: ECR image URI
+  
+  RDSHostname:
+    Type: String
+    Description: RDS endpoint
+  
+  RDSPort:
+    Type: String
+    Default: '5432'
+  
+  RDSDatabase:
+    Type: String
+    Description: Database name
+  
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where resources will be created
+  
+  PrivateSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Private subnets for VPC connector
+
+  RDSUsername:
+    Type: String
+    NoEcho: true
+    Description: RDS username
+  
+  RDSPassword:
+    Type: String
+    NoEcho: true
+    Description: RDS password
+
+Resources:
+  # Security Group for App Runner
+  AppRunnerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub 'apprunner-neotoma-${Environment}-sg'
+      GroupDescription: Security group for Neotoma App Runner service
+      VpcId: !Ref VPCId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 10.0.0.0/8
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  # VPC Connector for App Runner
+  VPCConnector:
+    Type: AWS::AppRunner::VpcConnector
+    Properties:
+      VpcConnectorName: !Sub 'neotoma-vpc-connector-${Environment}'
+      Subnets: !Ref PrivateSubnets
+      SecurityGroups:
+        - !Ref AppRunnerSecurityGroup
+
+  AppRunnerAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'AppRunnerAccessRole-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  # App Runner Instance Role (for runtime)
+  AppRunnerInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'AppRunnerInstanceRole-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  # App Runner Service
+  AppRunnerService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: !Sub 'neoapi-${Environment}'
+      SourceConfiguration:
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerAccessRole.Arn
+        ImageRepository:
+          ImageIdentifier: !Ref ImageUri
+          ImageConfiguration:
+            Port: '3001'
+            RuntimeEnvironmentVariables:
+            - Name: NODE_ENV
+              Value: !Ref Environment
+            - Name: RDS_HOSTNAME
+              Value: !Ref RDSHostname
+            - Name: RDS_PORT
+              Value: !Ref RDSPort
+            - Name: RDS_DATABASE
+              Value: !Ref RDSDatabase
+            - Name: RDS_USERNAME
+              Value: !Ref RDSUsername
+            - Name: RDS_PASSWORD
+              Value: !Ref RDSPassword
+            - Name: DB_SSL
+              Value: 'true'
+            - Name: PORT
+              Value: '3001'
+          ImageRepositoryType: ECR
+        AutoDeploymentsEnabled: true
+      InstanceConfiguration:
+        Cpu: "0.25 vCPU"
+        Memory: "0.5 GB"
+        InstanceRoleArn: !GetAtt AppRunnerInstanceRole.Arn
+      NetworkConfiguration:
+        EgressConfiguration:
+          EgressType: VPC
+          VpcConnectorArn: !GetAtt VPCConnector.VpcConnectorArn
+      HealthCheckConfiguration:
+        Protocol: HTTP
+        Path: /healthcheck
+        Interval: 20
+        Timeout: 5
+        HealthyThreshold: 1
+        UnhealthyThreshold: 5
+  
+Outputs:
+  ServiceUrl:
+    Description: App Runner service URL
+    Value: !Sub 'https://${AppRunnerService.ServiceUrl}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ServiceUrl'
+
+  CustomDomainURL:
+    Description: Custom domain URL
+    Value: !Sub 'https://${DomainName}'
