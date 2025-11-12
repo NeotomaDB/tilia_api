@@ -95,7 +95,7 @@ app.use('/', data)
 app.use('/healthcheck/', healthwatch);
 
 app.all('*', function (req, res) {
-  res.redirect('/api')
+  res.redirect(301, `${req.protocol}://${req.get('host')}/api`);
 })
 
 // custom 404
