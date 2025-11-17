@@ -10,10 +10,6 @@ var router = express.Router()
 
 var handlers = require('../handlers/data_handlers')
 
-router.get('/', (req, res) => {
-  res.redirect('/api')
-})
-
 router.get('/healthwatch', function (req, res, next) {
   res.status(200).json(
     { 'response': 'Okay' }
@@ -21,20 +17,20 @@ router.get('/healthwatch', function (req, res, next) {
 })
 
 // Runs, but pulls only from URL query parameters. (Check if this is being used)
-router.get('/api/update', handlers.handleGetUpdate)
+router.get('/update', handlers.handleGetUpdate)
 
-router.get('/api/logs/:lines', handlers.handleLogs)
-router.get('/api/logs', handlers.handleLogs)
+router.get('/logs/:lines', handlers.handleLogs)
+router.get('/logs', handlers.handleLogs)
 
 // Populates the dojo API.  Returns all API endpoints/Postgres functions.
-router.get('/api', handlers.allfunctions)
-router.post('/api', handlers.allfunctions)
+router.get('/', handlers.allfunctions)
+router.post('/', handlers.allfunctions)
 
 // Handles single and batch requests where parameters are passed in the body.
-router.post('/api/update/write', handlers.handlePostMultiUpdate)
+router.post('/update/write', handlers.handlePostMultiUpdate)
 router.post('/apiupdate/write', handlers.handlePostMultiUpdate)
 
 // Placeholder, not actually really used.
-router.delete('/api/delete', handlers.handleDelete)
+router.delete('/delete', handlers.handleDelete)
 
 module.exports = router
