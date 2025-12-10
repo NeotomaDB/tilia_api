@@ -92,10 +92,11 @@ app.use(express.static(path.join(__dirname, 'public')))
 var data = require('./routes/data.js')
 
 app.use('/', data)
+app.use('/api', data)
 app.use('/healthcheck/', healthwatch);
 
 app.all('*', function (req, res) {
-  res.redirect('/api')
+  res.redirect(301, `${req.protocol}://${req.get('host')}/api`);
 })
 
 // custom 404
