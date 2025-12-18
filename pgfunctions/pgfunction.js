@@ -92,7 +92,6 @@ function allFunctions (req, res, next) {
                   QueryParams = {}
                 } else {
                   for (let a in QueryArgs) {
-                    console.log(typeof outobj[QueryArgs[a]])
                     if (typeof outobj[QueryArgs[a]] === 'string' || outobj[QueryArgs[a]] instanceof String) {
                       var replaced = outobj[QueryArgs[a]]
                       replaced = replaced.replace(/^"(.*)"$/g, '$1')

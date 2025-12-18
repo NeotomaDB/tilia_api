@@ -192,7 +192,6 @@ function getparam (req, name) {
     query: JSON.parse(JSON.stringify(req.query ?? {}))
   }
 
-  console.log(output)
   result = {
     success: true,
     message: null,
