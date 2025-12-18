@@ -12,6 +12,7 @@ const dotenv = require('dotenv')
 const util = require('node:util')
 const cors = require('cors')
 const json5 = require('json5')
+const pgPromise = require('pg-promise');
 
 const app = express()
 dotenv.config()
@@ -94,11 +95,11 @@ var data = require('./routes/data.js')
 app.use('/', data)
 app.use('/api', data)
 app.use('/healthcheck/', healthwatch);
-
+/* 
 app.all('*', function (req, res) {
   res.redirect(301, `${req.protocol}://${req.get('host')}/api`);
 })
-
+ */
 // custom 404
 app.use((req, res, next) => {
   res.status(404).send("Ain't nobody here but us chickens!")
@@ -107,7 +108,7 @@ app.use((req, res, next) => {
 // custom error handler
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).send('Something broke!')
+  res.status(500).send({err: err.message, stack: err.stack})
 })
 
 // in production, port is 3001 and server started in script 'www'
