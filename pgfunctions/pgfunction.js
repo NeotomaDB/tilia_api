@@ -25,6 +25,7 @@ function allFunctions (req, res, next) {
     // Get the input parameters:
     var outobj = resultset
   }
+
   var noParam = Object.keys(outobj).length === 0
 
   var pgp = db.$config.pgp
@@ -36,12 +37,13 @@ function allFunctions (req, res, next) {
   pgp.pg.types.setTypeParser(1700, function (val) {
     return parseInt(val)
   })
+  const schemFunc = sql('../pgfunctions/get_schema.sql', pgp)
+  const queryFunc = sql('../pgfunctions/fun_query.sql', pgp)
 
   // The call to the documentation JSON object occurs if the user either
   // enters no parameters, or the term 'method' fails to appear in the
   // user query string.
   if (noParam | !outobj.method) {
-    let queryFunc = sql('../pgfunctions/fun_query.sql', pgp)
     // We're passing in the raw "/api/" endoint, which requests the set of all functions.
     db.any(queryFunc)
       .then(data => {
@@ -72,7 +74,6 @@ function allFunctions (req, res, next) {
     // Here we wind up with the different schema.
     // First validate that the method is in the accepted set for GET calls:
     if (funcSchema !== 'ts' || ['validateusername', 'validatesteward', 'checksteward'].includes(funcName)) {
-      let queryFunc = sql('../pgfunctions/fun_query.sql', pgp)
       var schema = db.any(queryFunc)
         .then(function (data) {
           // Check that outobj.method is in the set of data[name]:
@@ -82,7 +83,6 @@ function allFunctions (req, res, next) {
         .then(function (data) {
           if (data.includes(outobj.method)) {
             // If the function called by the user is in the set of existing Postgres functions:
-            let schemFunc = sql('../pgfunctions/get_schema.sql', pgp)
             db.any(schemFunc, [funcName])
               .then(function (data) {
                 let dbFunction = funcSchema + '.' + funcName
