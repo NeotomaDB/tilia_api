@@ -1,8 +1,8 @@
-const promise = require('bluebird')
+const pgPromise = require('pg-promise')
 
 const options = {
   // Initialization Options
-  promiseLib: promise,
+  promiseLib: pgPromise.promise,
   capSQL: true,
   query (e) {
     var date = new Date()
