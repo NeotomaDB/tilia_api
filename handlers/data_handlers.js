@@ -1,13 +1,6 @@
 // get global database object
 const readLastLines = require('read-last-lines')
-
-function handleGetUpdate (req, res, next) {
-  // This just redirects to the all function output.
-  // var date = new Date()
-  // console.log(date.toISOString + ' calling handleGetUpdate')
-  var pgFunk = require('../pgfunctions/pgfunction.js')
-  pgFunk.allFunctions(req, res, next)
-}
+const pgFunk = require('../pgfunctions/pgfunction.js')
 
 function handleDelete (req, res, next) {
   var data = {
@@ -19,7 +12,6 @@ function handleDelete (req, res, next) {
       data: data,
       message: 'Called DELETE api/update'
     })
-
 }
 
 function returnLog (req, res, next) {
@@ -102,32 +94,22 @@ function handlePostMultiUpdate (req, res, next) {
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
-      // returns array of object
-      //  { 'name': '_units', 'type': 'character varying', 'isdefault': false, 'paramorder': 1 }
-      // console.log('handlePostMultiRequest data: ' + JSON.stringify(data))
 
       var arrOfPgParams = []
 
       // process key|value for parameter inputs
       if (data.length > 0) {
-        console.log(functionInputs)
         // process array with one collection for each method call
         functionInputs.forEach(function (d, i) {
-          // console.log('parameter collection ' + i + ' is: ' + JSON.stringify(d))
           var pgParamArray = []
           data.forEach(function (e, i) {
-            // console.log('Input ' + e.name + ' has value ' + d[e.name])
             pgParamArray.push(d[e.name])
           })
-          // add array of input values to batch collection
           arrOfPgParams.push(pgParamArray)
         })
       }
 
-      // console.log('Collection input parameters is: ' + JSON.stringify(arrOfPgParams))
       var numOfCalls = arrOfPgParams.length
-
-      // console.log('Number of function calls to make: ' + numOfCalls)
 
       requestFactory(methodSubmitted, arrOfPgParams, req, function (arrOfCalls) {
         var dbb = req.app.locals.db
@@ -135,8 +117,6 @@ function handlePostMultiUpdate (req, res, next) {
           return t.batch(arrOfCalls)
         })
           .then(function (theResult) {
-            // console.log('batch result ' + JSON.stringify(theResult))
-            // have array of arrays containing object key|newid
             var batchData = []
             theResult.forEach(function (r) {
               if (r[0]) {
@@ -171,12 +151,13 @@ function handlePostMultiUpdate (req, res, next) {
 module.exports = {
   allfunctions: function (req, res, next) {
     /* This is returning the block query that is used to list the available functions. */
-    var pgFunk = require('../pgfunctions/pgfunction.js')
     pgFunk.allFunctions(req, res, next)
   },
   // handlePostUpdate: handlePostUpdate,
+  handleGetUpdate: function (req, res, next) {
+    pgFunk.allFunctions(req, res, next)
+  },
   handlePostMultiUpdate: handlePostMultiUpdate,
-  handleGetUpdate: handleGetUpdate,
   handleDelete: handleDelete,
   handleLogs: returnLog
 }

@@ -9,27 +9,48 @@ const options = {
 }
 const pgp = require('pg-promise')(options)
 
-const { geojsonToWKT, wktToGeoJSON } = require("@terraformer/wkt")
+const { geojsonToWKT, wktToGeoJSON } = require('@terraformer/wkt')
 
-// Goes through an object tree and clears out NULL elements (not sure this is the best).
+/**
+ * Remove empty elements from an object.
+ * @param {Object} obj An object to be cleaned.
+ * @returns {Object} The object with no empy or missing values.
+ */
 function removeEmpty (obj) {
-  Object.keys(obj).forEach(key => {
+  return Object.keys(obj).forEach(key => {
     if (obj[key] && typeof obj[key] === 'object') removeEmpty(obj[key])
     else if (obj[key] == null) delete obj[key]
   })
 }
 
-// Helper for linking to external query files:
+// We're going to cache the query files we we don't keep reloading them.
+const queryFileCache = {}
+
+/**
+ * Helper for linking to external query files.
+ * @param {string} file A string representing a valid path to a SQL file.
+ * @returns {pgp.QueryFile} A valid SQL query file object.
+ */
 function sql (file) {
   const fullPath = path.join(__dirname, file)
-  return new pgp.QueryFile(fullPath, {
+
+    // Return cached QueryFile if it already exists
+  if (queryFileCache[fullPath]) {
+    return queryFileCache[fullPath]
+  }
+
+  // Create new QueryFile and store in cache
+  queryFileCache[fullPath] = new pgp.QueryFile(fullPath, {
     minify: true
   })
+  
+  return queryFileCache[fullPath]
+
 }
 
 /**
    * Parser for comma separated strings.
-   * @param x A comma separated string.
+   * @param {str} x A comma separated string.
    * @return An array of integers.
    */
 function commaSep (x) {
@@ -42,8 +63,18 @@ function commaSep (x) {
   }
 }
 
-/* Takes integer values and passes them into a query to the database.
-   This is used when we need to pre-process values for an API call. */
+/**
+ * Pass in integer identifiers for database queries to return values.
+ * When numeric integers are passed in by the user, but we need to process these
+ * for the "proper" query, we need to work with promises prior to the actual
+ * route query. This function is used to get the result.
+ * @param {any} res The Express.js response object.
+ * @param {any} req The Express.js request object.
+ * @param {any} query The SQL query, passed from the `sql` command.
+ * @param {any} value An integer value, the numeric identifier.
+ * @param {any} outobj The set of parameters passed by the user.
+ * @returns {any} The result from the query.
+ */
 function checkObject (res, req, query, value, outobj) {
   let db = req.app.locals.db
   if (value) {
@@ -131,11 +162,15 @@ function getparam (req, name) {
   let result = { success: false, message: null, data: null }
 
   function clean (obj) {
-    let output = Object.keys(obj).filter(key => obj[key] !== undefined)
+    let output = []
+    if (obj) {
+      output = Object.keys(obj).filter(key => obj[key] !== undefined)
+    }
     return output
   }
 
-  const testquery = { body: clean(req.body),
+  const testquery = {
+    body: clean(req.body),
     params: clean(req.params),
     query: clean(req.query) }
 
@@ -150,17 +185,19 @@ function getparam (req, name) {
 
     return result
   }
-
+  
   let output = {
-    body: JSON.parse(JSON.stringify(req.body)),
-    params: JSON.parse(JSON.stringify(req.params)),
-    query: JSON.parse(JSON.stringify(req.query)) }
+    body: JSON.parse(JSON.stringify(req.body ?? {})),
+    params: JSON.parse(JSON.stringify(req.params ?? {})),
+    query: JSON.parse(JSON.stringify(req.query ?? {}))
+  }
 
   result = {
     success: true,
     message: null,
-    data: Object.assign(output.body, output.params, output.query) 
+    data: Object.assign(output.body, output.params, output.query)
   }
+
   return result
 }
 
