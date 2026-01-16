@@ -62,11 +62,11 @@ function handlePostMultiUpdate (req, res, next) {
   }
 
   try {
-    var content = JSON.stringify(req.body)
-    var header = JSON.stringify(req.headers)
+    let content = JSON.parse(req.body)
+    let header = req.headers
   } catch (exception) {
     var date = new Date()
-    console.log(date.toISOString + ' {"body": ' + content + ', "header":' + header + '}')
+    console.log(date.toISOString + ' ERROR: {"body": ' + req.body + ', "header":' + JSON.stringify(req.headers) + '}')
     return res.status(500)
       .json({
         success: 0,
@@ -77,9 +77,10 @@ function handlePostMultiUpdate (req, res, next) {
   }
 
   date = new Date()
-  console.log(date.toISOString() + ' {"body": ' + content + ', "header":' + header + '}')
-  var functionInputs = req.body.data
-  var methodSubmitted = req.body.method
+  console.log(date.toISOString() + ' {"body": ' + req.body + ', "header":' + JSON.stringify(req.headers) + '}')
+  var functionInputs = JSON.parse(req.body)['data']
+  var methodSubmitted = JSON.parse(req.body)['method']
+  console.log(methodSubmitted)
   var methodSansSchema = methodSubmitted.split('.')[1]
 
   if (methodSubmitted.length === 0) {
@@ -94,7 +95,6 @@ function handlePostMultiUpdate (req, res, next) {
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
-
       var arrOfPgParams = []
 
       // process key|value for parameter inputs
