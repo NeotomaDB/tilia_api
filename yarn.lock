@@ -1975,10 +1975,10 @@ resolve@^1.10.1, resolve@^1.22.4:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-rotating-file-stream@^3.2.7:
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-3.2.7.tgz#db41fce36d0a10de3e27f028aa8d5f587f1ca916"
-  integrity sha512-SVquhBEVvRFY+nWLUc791Y0MIlyZrEClRZwZFLLRgJKldHyV1z4e2e/dp9LPqCS3AM//uq/c3PnOFgjqnm5P+A==
+rotating-file-stream@^3.2.9:
+  version "3.2.9"
+  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-3.2.9.tgz#da1c76a03617e34544692689ab1dc51e260b19bd"
+  integrity sha512-i9i0KkHh12ryl4xtELg+0gyoFre2PJ9RcQQLzquWsiqygyYsrZLckrqqYrthhnJZGZb4g+KUHtcoWYVq34gaug==
 
 router@^2.2.0:
   version "2.2.0"
