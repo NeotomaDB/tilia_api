@@ -17,7 +17,7 @@
     "child_process": "^1.0.2",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "debug": "^4.3.1",
     "dotenv": "^17.3.1",
     "ejs": "^4.0.1",
