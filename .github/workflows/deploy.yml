@@ -16,6 +16,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      # NOTE: ENDPOINT is passed to CloudFormation as `DomainName`, which the template
+      # uses ONLY to build the `CustomDomainURL` output string. It does not create or
+      # change any DNS record or App Runner custom-domain association -- those were set
+      # up by hand in the App Runner console. Editing these values relabels the output;
+      # it does not reroute traffic.
       - name: Set environment based on branch
         run: |
           if [[ ${{ github.ref }} == 'refs/heads/production' ]]; then
@@ -99,15 +104,6 @@ jobs:
             --region ${{ env.AWS_REGION }} \
             --no-fail-on-empty-changeset
 
-      - name: Get ECR repository URI
-        run: |
-          ECR_URI=$(aws cloudformation describe-stacks \
-            --stack-name ${{ env.STACK_NAME }} \
-            --query 'Stacks[0].Outputs[?OutputKey==`ECRRepository`].OutputValue' \
-            --output text \
-            --region ${{ env.AWS_REGION }})
-          echo "ECR_REPOSITORY=$ECR_URI" >> $GITHUB_ENV
-
       - name: Get service URL
         run: |
           SERVICE_URL=$(aws cloudformation describe-stacks \
@@ -119,45 +115,93 @@ jobs:
           echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
           echo "service_url=$SERVICE_URL" >> $GITHUB_OUTPUT
 
-          echo "🚀 Deployment complete!"
+          echo "CloudFormation stack updated (this is NOT yet a successful deployment)."
           echo "Service URL: $SERVICE_URL"
           echo "Environment: ${{ env.ENVIRONMENT }}"
           echo "Image: ${{ env.IMAGE_URI }}"
 
+      # CloudFormation reporting UPDATE_COMPLETE only means App Runner ACCEPTED the new
+      # image. App Runner then runs its own deployment, which can fail its health check
+      # and silently roll back to the previous image. Because the old container keeps
+      # serving the default App Runner URL, curling that URL returns 200 even after a
+      # rollback -- so a curl-only check reports success on a failed deploy. (This is how
+      # the tdev/tprod services sat on a Jan-2026 image for months while runs went green.)
+      # Assert on the App Runner operation status, and confirm the image actually running.
+      - name: Verify App Runner deployment
+        run: |
+          SERVICE_ARN=$(aws apprunner list-services \
+            --region ${{ env.AWS_REGION }} \
+            --query "ServiceSummaryList[?ServiceName=='neoapi-${{ env.ENVIRONMENT }}'].ServiceArn" \
+            --output text)
+
+          if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" = "None" ]; then
+            echo "::error::Could not find App Runner service neoapi-${{ env.ENVIRONMENT }}"
+            exit 1
+          fi
+          echo "Service ARN: $SERVICE_ARN"
+
+          # App Runner deployments take roughly 3-7 minutes; wait for it to settle.
+          OP_STATUS=""
+          for i in $(seq 1 40); do
+            OP=$(aws apprunner list-operations \
+              --service-arn "$SERVICE_ARN" \
+              --region ${{ env.AWS_REGION }} \
+              --max-results 1 \
+              --query 'OperationSummaryList[0].[Status,Type,StartedAt]' \
+              --output text)
+            OP_STATUS=$(echo "$OP" | awk '{print $1}')
+            echo "[$i] operation: $OP"
+
+            if [ "$OP_STATUS" != "IN_PROGRESS" ] && [ "$OP_STATUS" != "PENDING" ]; then
+              break
+            fi
+            sleep 30
+          done
+
+          RUNNING_IMAGE=$(aws apprunner describe-service \
+            --service-arn "$SERVICE_ARN" \
+            --region ${{ env.AWS_REGION }} \
+            --query 'Service.SourceConfiguration.ImageRepository.ImageIdentifier' \
+            --output text)
+
+          echo "Expected image: ${{ env.IMAGE_URI }}"
+          echo "Running image:  $RUNNING_IMAGE"
+
+          if [ "$OP_STATUS" != "SUCCEEDED" ]; then
+            echo "::error::App Runner deployment did not succeed (status: $OP_STATUS)."
+            echo "The service has rolled back and is still running the previous image."
+            echo "Inspect the startup crash in CloudWatch:"
+            echo "  aws logs filter-log-events --region ${{ env.AWS_REGION }} \\"
+            echo "    --log-group-name /aws/apprunner/neoapi-${{ env.ENVIRONMENT }}/<service-id>/application"
+            exit 1
+          fi
+
+          if [ "$RUNNING_IMAGE" != "${{ env.IMAGE_URI }}" ]; then
+            echo "::error::Operation succeeded but the running image is not the one just pushed."
+            exit 1
+          fi
+
+          echo "App Runner deployment succeeded and is running the expected image."
+
       - name: Health check
         run: |
-          SERVICE_URL="${{ env.SERVICE_URL }}"
-          HEALTH_ENDPOINT="${SERVICE_URL}/healthcheck"
+          HEALTH_ENDPOINT="${{ env.SERVICE_URL }}/healthcheck"
+          echo "Health check: $HEALTH_ENDPOINT"
 
-          echo "Performing health check on: $HEALTH_ENDPOINT"
-          echo "Waiting 60 seconds for App Runner to start..."
-          sleep 60
-
-          MAX_ATTEMPTS=10
-          ATTEMPT=1
-
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Health check attempt $ATTEMPT/$MAX_ATTEMPTS..."
-            
+          for ATTEMPT in $(seq 1 10); do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_ENDPOINT" || echo "000")
-            
+
             if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Health check passed! (HTTP $HTTP_CODE)"
+              echo "Health check passed (HTTP $HTTP_CODE)"
               exit 0
-            else
-              echo "⏳ Health check failed with HTTP code: $HTTP_CODE"
-              
-              if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-                echo "❌ Health check failed after $MAX_ATTEMPTS attempts"
-                exit 1
-              fi
-              
-              echo "Retrying in 30 seconds..."
-              sleep 30
             fi
-            
-            ATTEMPT=$((ATTEMPT + 1))
+
+            echo "Attempt $ATTEMPT/10 -> HTTP $HTTP_CODE; retrying in 15s"
+            sleep 15
           done
+
+          echo "::error::Health check failed after 10 attempts"
+          exit 1
 
       - name: Notify deployment status
         if: always()
