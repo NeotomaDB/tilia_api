@@ -1,10 +1,11 @@
 const path = require('path')
 var assert = require('assert')
-const promise = require('bluebird')
 
 // Initialization Options
+// `promiseLib` (and with it the bluebird import) was removed in pg-promise v12,
+// which uses native promises. Passing it throws
+// 'Option "promiseLib" is not recognized.' at startup.
 const options = {
-  promiseLib: promise,
   capSQL: true
 }
 const pgp = require('pg-promise')(options)

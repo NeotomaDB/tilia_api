@@ -44,6 +44,17 @@ function allFunctions (req, res, next) {
   // enters no parameters, or the term 'method' fails to appear in the
   // user query string.
   if (noParam | !outobj.method) {
+    // Obscured: the bare endpoint no longer advertises the set of available
+    // Postgres functions. Callers must supply an explicit `method`.
+    return res.status(200)
+      .json({
+        success: 1,
+        status: 'success',
+        data: null,
+        message: 'Welcome to the Tilia API'
+      })
+
+    /* ---- Previous behaviour, retained for reference ----
     // We're passing in the raw "/api/" endoint, which requests the set of all functions.
     db.any(queryFunc)
       .then(data => {
@@ -66,6 +77,7 @@ function allFunctions (req, res, next) {
             query: queryFunc
           })
       })
+    ---- end previous behaviour ---- */
   } else {
     var arrFuncNameParts = outobj.method.split('.')
     var funcSchema = arrFuncNameParts[0]

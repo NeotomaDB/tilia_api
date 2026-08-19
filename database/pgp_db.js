@@ -2,7 +2,9 @@ const pgPromise = require('pg-promise')
 
 const options = {
   // Initialization Options
-  promiseLib: pgPromise.promise,
+  // `promiseLib` was removed in pg-promise v12 (it uses native promises), and
+  // passing it now throws 'Option "promiseLib" is not recognized.' at startup.
+  // It was already a no-op here, since `pgPromise.promise` is undefined.
   capSQL: true,
   query (e) {
     var date = new Date()
