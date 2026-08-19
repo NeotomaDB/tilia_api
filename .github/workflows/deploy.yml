@@ -27,7 +27,7 @@ jobs:
             echo "ENVIRONMENT=tdev" >> $GITHUB_ENV
             echo "STACK_NAME=neotilia-dev" >> $GITHUB_ENV
             echo "RDSDB=neotomatank" >> $GITHUB_ENV
-            echo "ENDPOINT=tilia-dev.neotomadb.org" >> $GITHUB_ENV
+            echo "ENDPOINT=tiliatank.neotomadb.org" >> $GITHUB_ENV
           fi
 
       - name: Configure AWS credentials
