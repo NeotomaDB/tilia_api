@@ -3,6 +3,28 @@
 const { sql, getparam } = require('../src/neotomaapi.js')
 
 /**
+ * Unwrap a string parameter that the client has quoted as a SQL literal.
+ * The Tilia desktop client wraps every string search parameter in single quotes
+ * and encodes an apostrophe as `%27%27`, a doubled SQL quote (TIJSON.cpp:67,145).
+ * That dates from when the value was concatenated straight into SQL; pg-promise
+ * escapes for us now, so a doubled quote left in place searches for a name that
+ * literally contains two apostrophes and `D'Andrea` never matches. Undo the
+ * doubling only when a single-quoted literal was actually unwrapped, so callers
+ * passing an unquoted `D'Andrea` are left alone.
+ * @param {string} value A string parameter as supplied by the caller.
+ * @returns {string} The value with any client-applied SQL quoting removed.
+ */
+function unwrapClientLiteral (value) {
+  if (/^".*"$/s.test(value)) {
+    return value.slice(1, -1)
+  }
+  if (/^'.*'$/s.test(value)) {
+    return value.slice(1, -1).replace(/''/g, "'")
+  }
+  return value
+}
+
+/**
  * Return the set of available database functions made visible through the API.
  * @param {Request} req - A Request object passed from the user through the http protocal
  * @param {Response} res - A Response object to be passed back to the user.
@@ -105,9 +127,7 @@ function allFunctions (req, res, next) {
                 } else {
                   for (let a in QueryArgs) {
                     if (typeof outobj[QueryArgs[a]] === 'string' || outobj[QueryArgs[a]] instanceof String) {
-                      var replaced = outobj[QueryArgs[a]]
-                      replaced = replaced.replace(/^"(.*)"$/g, '$1')
-                      QueryParams[QueryArgs[a]] = replaced.replace(/^'(.*)'$/g, '$1')
+                      QueryParams[QueryArgs[a]] = unwrapClientLiteral(String(outobj[QueryArgs[a]]))
                     } else {
                       QueryParams[QueryArgs[a]] = outobj[QueryArgs[a]]
                     }
