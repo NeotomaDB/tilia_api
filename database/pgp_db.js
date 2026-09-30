@@ -48,7 +48,8 @@ function dbheader () {
     'ssl': {
       'rejectUnauthorized': false
     },
-    'query_timeout': 15000
+    // Keep below Tilia Desktop's 60 s client timeout so Tilia receives the JSON error.
+    'query_timeout': 45000
   }
   return pgp(out)
 }
