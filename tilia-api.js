@@ -58,20 +58,21 @@ app.locals.db = dbtest();
 // This helps us figure out what's going on:
 app.use((req, res, next) => {
   express.text({ type: '*/*', 'strict': false, 'inflate': true })(req, res, err => {
+    // body-parser 2 no longer sets req._body, so test for the raw text body directly.
+    const hasBody = typeof req.body === 'string' && req.body.trim().length > 0
     try {
-      if(req._body){
-        let test = json5.parse(req.body)
-        req.body = test
+      if (hasBody) {
+        req.body = json5.parse(req.body)
       }
     } catch {
       var date = new Date()
-      if(req._body){
-        console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": "' + req._body + '"}')
+      if (hasBody) {
+        console.log(date.toISOString() + ' {"error": "JSON body will not parse", "body": ' + JSON.stringify(req.body) + '}')
         return res.status(400)
           .json({
             success: 0,
             status: 'failure',
-            data: req._body,
+            data: req.body,
             message: 'The JSON body will not properly parse.'
           })
       }

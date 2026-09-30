@@ -52,7 +52,8 @@ function requestFactory (theMethod, paramCollection, req, callback) {
  */
 function handlePostMultiUpdate (req, res, next) {
   var db = req.app.locals.db
-  if (Object.keys(req.body).length === 0) {
+  // The JSON5 middleware in tilia-api.js has already parsed the body into an object.
+  if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
     return res.status(500)
       .json({
         success: 0,
@@ -61,29 +62,21 @@ function handlePostMultiUpdate (req, res, next) {
       })
   }
 
-  try {
-    let content = JSON.parse(req.body)
-    let header = req.headers
-  } catch (exception) {
-    var date = new Date()
-    console.log(date.toISOString + ' ERROR: {"body": ' + req.body + ', "header":' + JSON.stringify(req.headers) + '}')
-    return res.status(500)
-      .json({
-        success: 0,
-        status: 'failure',
-        data: null,
-        message: 'The API cannot parse the body content, error: ' + exception.message
-      })
+  // Tilia sends steward credentials as headers; keep them out of the logs.
+  var loggedHeaders = Object.assign({}, req.headers)
+  for (const secret of ['pwd', 'authorization']) {
+    if (secret in loggedHeaders) {
+      loggedHeaders[secret] = '[redacted]'
+    }
   }
 
-  date = new Date()
-  console.log(date.toISOString() + ' {"body": ' + req.body + ', "header":' + JSON.stringify(req.headers) + '}')
-  var functionInputs = JSON.parse(req.body)['data']
-  var methodSubmitted = JSON.parse(req.body)['method']
+  var date = new Date()
+  console.log(date.toISOString() + ' {"body": ' + JSON.stringify(req.body) + ', "header":' + JSON.stringify(loggedHeaders) + '}')
+  var functionInputs = req.body.data
+  var methodSubmitted = req.body.method
   console.log(methodSubmitted)
-  var methodSansSchema = methodSubmitted.split('.')[1]
 
-  if (methodSubmitted.length === 0) {
+  if (typeof methodSubmitted !== 'string' || methodSubmitted.length === 0) {
     return res.status(500)
       .json({
         success: 0,
@@ -92,6 +85,8 @@ function handlePostMultiUpdate (req, res, next) {
         message: 'The API requires a valid method submitted in thh body content.'
       })
   }
+  var methodSansSchema = methodSubmitted.split('.')[1]
+
   // 1. validate method name
   db.func('ti.getprocedureinputparams', [methodSubmitted])
     .then(function (data) {
