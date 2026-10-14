@@ -1,6 +1,5 @@
 ﻿var busy = null;
 //var endPoint = "/Retrieve/";
-//var endPoint = "//tilia-dev.neotomadb.org:3001/Retrieve/";
 //var endPoint = "//localhost:3001/Retrieve/";
 var endPoint = "/api/";
 
